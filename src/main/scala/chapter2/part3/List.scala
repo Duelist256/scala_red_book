@@ -67,6 +67,103 @@ object List {
         case Nil => acc
       }
     }
+
     loop(l, Nil)
   }
+
+  def foldRight[A, B](as: List[A], z: B)(f: (A, B) => B): B =
+    as match {
+      case Nil => z
+      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+    }
+
+  def sum2(ns: List[Int]): Int =
+    foldRight(ns, 0)((x, y) => x + y)
+
+  def product2(ns: List[Double]): Double =
+    foldRight(ns, 1.0)(_ * _)
+
+
+  /* Exercise 3.7 */
+  /* TODO: Can product, implemented using foldRight, immediately halt the recursion and
+     return 0.0 if it encounters a 0.0? Why or why not? Consider how any short-circuiting
+     might work if you call foldRight with a large list. This is a deeper question that we’ll
+     return to in chapter 5. */
+
+  /* Exercise 3.8 */
+  /* TODO: See what happens when you pass Nil and Cons themselves to foldRight, like this:
+     foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)).10 What do you think this
+     says about the relationship between foldRight and the data constructors of List? */
+
+  /* Exercise 3.9 */
+  /* TODO: Compute the length of a list using foldRight. */
+  def length[A](as: List[A]): Int = ???
+
+  /* Exercise 3.10 */
+  /* TODO: Our implementation of foldRight is not tail-recursive and will result in a StackOverflowError
+     for large lists (we say it’s not stack-safe). Convince yourself that this is the
+     case, and then write another general list-recursion function, foldLeft, that is
+     tail-recursive, using the techniques we discussed in the previous chapter. Here is its signature
+  */
+  def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = ???
+
+  /*Exercise 3.11 */
+  /* TODO: Write sum, product, and a function to compute the length of a list using foldLeft. */
+
+  /*Exercise 3.12 */
+  /* TODO: Write a function that returns the reverse of a list (given List(1,2,3) it returns
+     List(3,2,1)). See if you can write it using a fold.
+  */
+
+  /*Exercise 3.13 */
+  /* TODO: Hard: Can you write foldLeft in terms of foldRight? How about the other way
+     around? Implementing foldRight via foldLeft is useful because it lets us implement
+     foldRight tail-recursively, which means it works even for large lists without overflowing
+     the stack.
+  */
+
+  /*Exercise 3.14 */
+  /* TODO: Implement append in terms of either foldLeft or foldRight. */
+
+  /*Exercise 3.15 */
+  /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
+     should be linear in the total length of all lists. Try to use functions we have already
+     defined.
+  */
+
+  /* Exercise 3.16 */
+  /* TODO: Write a function that transforms a list of integers by adding 1 to each element.
+     (Reminder: this should be a pure function that returns a new List!)*/
+
+  /* Exercise 3.17 */
+  /* TODO: Write a function that turns each value in a List[Double] into a String. You can use
+     the expression d.toString to convert some d: Double to a String.*/
+
+  /* Exercise 3.18 */
+  /* TODO: Write a function map that generalizes modifying each element in a list while maintaining
+     the structure of the list. Here is its signature:*/
+  def map[A, B](as: List[A])(f: A => B): List[B] = ???
+
+  /* Exercise 3.19 */
+  /* TODO: Write a function filter that removes elements from a list unless they satisfy a given
+     predicate. Use it to remove all odd numbers from a List[Int]. */
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = ???
+
+  /* Exercise 3.20 */
+  /* TODO: Write a function flatMap that works like map except that the function given will return
+     a list instead of a single result, and that list should be inserted into the final resulting
+     list. Here is its signature: */
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = ???
+  /* For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3). */
+
+  /* Exercise 3.21 */
+  /* TODO: Use flatMap to implement filter. */
+
+  /* Exercise 3.22 */
+  /* TODO: Write a function that accepts two lists and constructs a new list by adding corresponding
+     elements. For example, List(1,2,3) and List(4,5,6) become List(5,7,9). */
+
+  /* Exercise 3.23 */
+  /* TODO: Generalize the function you just wrote so that it’s not specific to integers or addition.
+     Name your generalized function zipWith.*/
 }
