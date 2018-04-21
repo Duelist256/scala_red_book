@@ -85,19 +85,28 @@ object List {
 
 
   /* Exercise 3.7 */
-  /* TODO: Can product, implemented using foldRight, immediately halt the recursion and
+  /* Can product, implemented using foldRight, immediately halt the recursion and
      return 0.0 if it encounters a 0.0? Why or why not? Consider how any short-circuiting
      might work if you call foldRight with a large list. This is a deeper question that we’ll
-     return to in chapter 5. */
+     return to in chapter 5.
+
+     Answer: I think it can't because of an implementation of foldRight. But maybe if foldLeft had an
+     additional parameter as predicate, it would be possible
+     */
+
 
   /* Exercise 3.8 */
-  /* TODO: See what happens when you pass Nil and Cons themselves to foldRight, like this:
-     foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)).10 What do you think this
-     says about the relationship between foldRight and the data constructors of List? */
+  /* See what happens when you pass Nil and Cons themselves to foldRight, like this:
+     foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)). What do you think this
+     says about the relationship between foldRight and the data constructors of List?
+
+     Answer: It returns the same list. A - is Int, B - is List[Int]. Function (A, B) => B produces list.
+     The method returns B, i.e. List[Int]
+     */
 
   /* Exercise 3.9 */
-  /* TODO: Compute the length of a list using foldRight. */
-  def length[A](as: List[A]): Int = ???
+  /* Compute the length of a list using foldRight. */
+  def length[A](as: List[A]): Int = foldRight(as, 0)((_, count) => count + 1)
 
   /* Exercise 3.10 */
   /* TODO: Our implementation of foldRight is not tail-recursive and will result in a StackOverflowError
