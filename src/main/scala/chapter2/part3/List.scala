@@ -109,32 +109,44 @@ object List {
   def length[A](as: List[A]): Int = foldRight(as, 0)((_, count) => count + 1)
 
   /* Exercise 3.10 */
-  /* TODO: Our implementation of foldRight is not tail-recursive and will result in a StackOverflowError
+  /* Our implementation of foldRight is not tail-recursive and will result in a StackOverflowError
      for large lists (we say it’s not stack-safe). Convince yourself that this is the
      case, and then write another general list-recursion function, foldLeft, that is
      tail-recursive, using the techniques we discussed in the previous chapter. Here is its signature
   */
-  def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = ???
+  def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
+    as match {
+      case Nil => z
+      case x Cons xs => foldLeft(xs, f(z, x))(f)
+    }
+  }
 
-  /*Exercise 3.11 */
-  /* TODO: Write sum, product, and a function to compute the length of a list using foldLeft. */
+  /* Exercise 3.11 */
+  /* Write sum, product, and a function to compute the length of a list using foldLeft. */
 
-  /*Exercise 3.12 */
-  /* TODO: Write a function that returns the reverse of a list (given List(1,2,3) it returns
+  def sumFl(ints: List[Int]): Int = foldLeft(ints, 0)(_ + _)
+
+  def productFl(ds: List[Double]): Double = foldLeft(ds, 1.0)(_ * _)
+
+  def lengthFl[A](as: List[A]): Int = foldLeft[A, Int](as, 0)((count, _) => count + 1)
+
+  /* Exercise 3.12 */
+  /* Write a function that returns the reverse of a list (given List(1,2,3) it returns
      List(3,2,1)). See if you can write it using a fold.
   */
+  def reverse[A](as: List[A]): List[A] = foldLeft(as, Nil:List[A])((acc, e) => Cons(e, acc))
 
-  /*Exercise 3.13 */
+  /* Exercise 3.13 */
   /* TODO: Hard: Can you write foldLeft in terms of foldRight? How about the other way
      around? Implementing foldRight via foldLeft is useful because it lets us implement
      foldRight tail-recursively, which means it works even for large lists without overflowing
      the stack.
   */
 
-  /*Exercise 3.14 */
+  /* Exercise 3.14 */
   /* TODO: Implement append in terms of either foldLeft or foldRight. */
 
-  /*Exercise 3.15 */
+  /* Exercise 3.15 */
   /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
      should be linear in the total length of all lists. Try to use functions we have already
      defined.
