@@ -134,17 +134,25 @@ object List {
   /* Write a function that returns the reverse of a list (given List(1,2,3) it returns
      List(3,2,1)). See if you can write it using a fold.
   */
-  def reverse[A](as: List[A]): List[A] = foldLeft(as, Nil:List[A])((acc, e) => Cons(e, acc))
+  def reverse[A](as: List[A]): List[A] = foldLeft(as, Nil: List[A])((acc, e) => Cons(e, acc))
 
   /* Exercise 3.13 */
-  /* TODO: Hard: Can you write foldLeft in terms of foldRight? How about the other way
+  /* Hard: Can you write foldLeft in terms of foldRight? How about the other way
      around? Implementing foldRight via foldLeft is useful because it lets us implement
      foldRight tail-recursively, which means it works even for large lists without overflowing
      the stack.
   */
 
+  def foldLeftFR[A, B](as: List[A], z: B)(f: (B, A) => B): B =
+    foldRight[A, B](as, z)((el, acc) => f(acc, el))
+
+  def foldRightFL[A, B](as: List[A], z: B)(f: (A, B) => B): B =
+    foldLeft[A, B](as, z)((acc, e) => f(e, acc))
+
   /* Exercise 3.14 */
-  /* TODO: Implement append in terms of either foldLeft or foldRight. */
+  /* Implement append in terms of either foldLeft or foldRight. */
+  def appendFL[A](list1: List[A], list2: List[A]): List[A] =
+    foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
 
   /* Exercise 3.15 */
   /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
@@ -175,6 +183,7 @@ object List {
      a list instead of a single result, and that list should be inserted into the final resulting
      list. Here is its signature: */
   def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = ???
+
   /* For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3). */
 
   /* Exercise 3.21 */
