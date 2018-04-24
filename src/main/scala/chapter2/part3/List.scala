@@ -152,26 +152,33 @@ object List {
   /* Exercise 3.14 */
   /* Implement append in terms of either foldLeft or foldRight. */
   def appendFR[A](list1: List[A], list2: List[A]): List[A] =
-    foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
+  foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
 
   /* Exercise 3.15 */
   /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
      should be linear in the total length of all lists. Try to use functions we have already
      defined.
   */
+  def flatten[A](list: List[List[A]]): List[A] =
+  foldRight(list, List[A]())(appendFR)
 
   /* Exercise 3.16 */
-  /* TODO: Write a function that transforms a list of integers by adding 1 to each element.
+  /* Write a function that transforms a list of integers by adding 1 to each element.
      (Reminder: this should be a pure function that returns a new List!)*/
+  def incEachElemOfList(list: List[Int]): List[Int] =
+  foldRight(list, List[Int]())((elem, acc) => Cons(elem + 1, acc))
 
   /* Exercise 3.17 */
-  /* TODO: Write a function that turns each value in a List[Double] into a String. You can use
+  /* Write a function that turns each value in a List[Double] into a String. You can use
      the expression d.toString to convert some d: Double to a String.*/
+  def turnDoubleIntoString(list: List[Double]): List[String] =
+  foldRight(list, List[String]())((elem, acc) => Cons(elem.toString, acc))
 
   /* Exercise 3.18 */
-  /* TODO: Write a function map that generalizes modifying each element in a list while maintaining
+  /* Write a function map that generalizes modifying each element in a list while maintaining
      the structure of the list. Here is its signature:*/
-  def map[A, B](as: List[A])(f: A => B): List[B] = ???
+  def map[A, B](as: List[A])(f: A => B): List[B] =
+    foldRight(as, List[B]())((elem, acc) => Cons(f(elem), acc))
 
   /* Exercise 3.19 */
   /* TODO: Write a function filter that removes elements from a list unless they satisfy a given
