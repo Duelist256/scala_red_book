@@ -151,7 +151,7 @@ object List {
 
   /* Exercise 3.14 */
   /* Implement append in terms of either foldLeft or foldRight. */
-  def appendFL[A](list1: List[A], list2: List[A]): List[A] =
+  def appendFR[A](list1: List[A], list2: List[A]): List[A] =
     foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
 
   /* Exercise 3.15 */
