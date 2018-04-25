@@ -152,7 +152,7 @@ object List {
   /* Exercise 3.14 */
   /* Implement append in terms of either foldLeft or foldRight. */
   def appendFR[A](list1: List[A], list2: List[A]): List[A] =
-  foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
+    foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
 
   /* Exercise 3.15 */
   /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
@@ -160,19 +160,19 @@ object List {
      defined.
   */
   def flatten[A](list: List[List[A]]): List[A] =
-  foldRight(list, List[A]())(appendFR)
+    foldRight(list, List[A]())(appendFR)
 
   /* Exercise 3.16 */
   /* Write a function that transforms a list of integers by adding 1 to each element.
      (Reminder: this should be a pure function that returns a new List!)*/
   def incEachElemOfList(list: List[Int]): List[Int] =
-  foldRight(list, List[Int]())((elem, acc) => Cons(elem + 1, acc))
+    foldRight(list, List[Int]())((elem, acc) => Cons(elem + 1, acc))
 
   /* Exercise 3.17 */
   /* Write a function that turns each value in a List[Double] into a String. You can use
      the expression d.toString to convert some d: Double to a String.*/
   def turnDoubleIntoString(list: List[Double]): List[String] =
-  foldRight(list, List[String]())((elem, acc) => Cons(elem.toString, acc))
+    foldRight(list, List[String]())((elem, acc) => Cons(elem.toString, acc))
 
   /* Exercise 3.18 */
   /* Write a function map that generalizes modifying each element in a list while maintaining
@@ -181,26 +181,44 @@ object List {
     foldRight(as, List[B]())((elem, acc) => Cons(f(elem), acc))
 
   /* Exercise 3.19 */
-  /* TODO: Write a function filter that removes elements from a list unless they satisfy a given
+  /* Write a function filter that removes elements from a list unless they satisfy a given
      predicate. Use it to remove all odd numbers from a List[Int]. */
-  def filter[A](as: List[A])(f: A => Boolean): List[A] = ???
+  def filter[A](as: List[A])(f: A => Boolean): List[A] =
+    foldRight(as, List[A]())((elem, acc) => if (f(elem)) Cons(elem, acc) else acc)
 
   /* Exercise 3.20 */
-  /* TODO: Write a function flatMap that works like map except that the function given will return
+  /* Write a function flatMap that works like map except that the function given will return
      a list instead of a single result, and that list should be inserted into the final resulting
      list. Here is its signature: */
-  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = ???
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] =
+    flatten(map(as)(f))
 
   /* For instance, flatMap(List(1,2,3))(i => List(i,i)) should result in List(1,1,2,2,3,3). */
 
   /* Exercise 3.21 */
-  /* TODO: Use flatMap to implement filter. */
+  /* Use flatMap to implement filter. */
+  def filterViaFM[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as){
+      e => if(f(e)) List(e) else Nil
+    }
 
   /* Exercise 3.22 */
-  /* TODO: Write a function that accepts two lists and constructs a new list by adding corresponding
+  /* Write a function that accepts two lists and constructs a new list by adding corresponding
      elements. For example, List(1,2,3) and List(4,5,6) become List(5,7,9). */
+  def sumEachElem(first: List[Int], second: List[Int]): List[Int] = {
+      (first, second) match {
+        case (_, Nil) | (Nil, _) => Nil
+        case (Cons(x, xs), Cons(y, ys)) => Cons(x + y, sumEachElem(xs, ys))
+      }
+  }
 
   /* Exercise 3.23 */
-  /* TODO: Generalize the function you just wrote so that it’s not specific to integers or addition.
+  /* Generalize the function you just wrote so that it’s not specific to integers or addition.
      Name your generalized function zipWith.*/
+  def zipWith[A](first: List[A], second: List[A])(f: (A, A) => A): List[A] = {
+    (first, second) match {
+      case (_, Nil) | (Nil, _) => Nil
+      case (Cons(x, xs), Cons(y, ys)) => Cons(f(x, y), zipWith(xs, ys)(f))
+    }
+  }
 }
