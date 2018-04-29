@@ -28,12 +28,24 @@ object Tree {
   }
 
   /* Exercise 3.27 */
-  /* TODO: Write a function depth that returns the maximum path length from the root of a tree
+  /* Write a function depth that returns the maximum path length from the root of a tree
      to any leaf. */
+  def depth[A](tree: Tree[A]): Int = {
+    tree match {
+      case Leaf(_) => 1
+      case Branch(left, right) => depth(left).max(depth(right)) + 1
+    }
+  }
 
   /* Exercise 3.28 */
-  /* TODO: Write a function map, analogous to the method of the same name on List, that modifies
+  /* Write a function map, analogous to the method of the same name on List, that modifies
      each element in a tree with a given function. */
+  def map[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
+    tree match {
+      case Leaf(v) => Leaf(f(v))
+      case Branch(left, right) => Branch(map(left)(f), map(right)(f))
+    }
+  }
 
   /* Exercise 3.29 */
   /* TODO: Generalize size, maximum, depth, and map, writing a new function fold that abstracts
