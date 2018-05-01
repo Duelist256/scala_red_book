@@ -1,6 +1,6 @@
-package chapter2.part3
+package part1.chapter3
 
-import chapter2.part3.List._
+import part1.chapter3.List._
 import org.scalatest.{FunSpec, FunSuite, Matchers}
 
 class ListTest extends FunSpec with Matchers {

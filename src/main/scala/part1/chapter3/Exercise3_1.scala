@@ -1,4 +1,4 @@
-package chapter2.part3
+package part1.chapter3
 
 object Exercise3_1 extends App {
   import List.sum

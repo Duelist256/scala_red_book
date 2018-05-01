@@ -1,4 +1,4 @@
-package chapter2.part2
+package part1.chapter2
 
 object Exercise2_2 extends App {
   def isSorted[A](as: Array[A], ordered: (A, A) => Boolean): Boolean = {

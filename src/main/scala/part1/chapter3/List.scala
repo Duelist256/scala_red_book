@@ -1,4 +1,4 @@
-package chapter2.part3
+package part1.chapter3
 
 sealed trait List[+A]
 
@@ -155,7 +155,7 @@ object List {
     foldRight[A, List[A]](list1, list2)((elem, list) => Cons(elem, list))
 
   /* Exercise 3.15 */
-  /* TODO: Hard: Write a function that concatenates a list of lists into a single list. Its runtime
+  /* Hard: Write a function that concatenates a list of lists into a single list. Its runtime
      should be linear in the total length of all lists. Try to use functions we have already
      defined.
   */

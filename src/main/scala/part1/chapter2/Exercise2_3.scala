@@ -1,4 +1,4 @@
-package chapter2.part2
+package part1.chapter2
 
 object Exercise2_3 extends App {
   def curry[A, B, C](f: (A, B) => C): A => (B => C) = {

@@ -1,4 +1,4 @@
-package chapter2.part2
+package part1.chapter2
 
 object Implemented {
   def curry[A, B, C](f: (A, B) => C): A => (B => C) = {
@@ -11,7 +11,7 @@ object Implemented {
 
 object Exercise2_4 extends App {
 
-  import chapter2.part2.Implemented.concatLength
+  import part1.chapter2.Implemented.concatLength
 
   def uncurry[A, B, C](f: A => B => C): (A, B) => C = {
     (a: A, b: B) => f(a)(b)

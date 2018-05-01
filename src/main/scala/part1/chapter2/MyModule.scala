@@ -1,4 +1,4 @@
-package chapter2.part2
+package part1.chapter2
 
 object MyModule {
 
