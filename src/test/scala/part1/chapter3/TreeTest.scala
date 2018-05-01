@@ -48,19 +48,19 @@ class TreeTest extends FunSpec with Matchers {
                                                                  Branch(Leaf(6.0), Leaf(-7.5)))))
       }
     }
-    describe("Exercise 3.29: fold, sizeViaFold, maximumViaFold, depthViaFold and mapViaFold") {
-      it("fold: should return nonempty result") {
-        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
-        fold(tree, 0)(_ + _) shouldEqual 36
-        fold(tree, 1)(_ * _) shouldEqual -248
-        val treeOfStrings = Branch(Branch(Leaf("Hello, "), Leaf("World!")), Branch(Leaf(" Whatcha "), Leaf("doin?")))
-        fold(treeOfStrings, "")(_ + _) shouldEqual "Hello, World! Whatcha doin?"
-      }
-      it("sizeViaFold: should return nonempty result") {
-        val tree5 = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
-        val tree7 = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
-        sizeViaFold(tree5) shouldEqual 3 // TODO: LOLKEK
-      }
-    }
+//    describe("Exercise 3.29: fold, sizeViaFold, maximumViaFold, depthViaFold and mapViaFold") {
+//      it("fold: should return nonempty result") {
+//        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
+//        fold(tree, 0)(_ + _) shouldEqual 36
+//        fold(tree, 1)(_ * _) shouldEqual -248
+//        val treeOfStrings = Branch(Branch(Leaf("Hello, "), Leaf("World!")), Branch(Leaf(" Whatcha "), Leaf("doin?")))
+//        fold(treeOfStrings, "")(_ + _) shouldEqual "Hello, World! Whatcha doin?"
+//      }
+//      it("sizeViaFold: should return nonempty result") {
+//        val tree5 = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
+//        val tree7 = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+//        sizeViaFold(tree5) shouldEqual 3 // TODO: LOLKEK
+//      }
+//    }
   }
 }
