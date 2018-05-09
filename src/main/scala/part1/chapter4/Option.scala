@@ -32,7 +32,7 @@ trait Option[+A] {
     map(v => Some(v)) getOrElse ob
 
   def filter(f: A => Boolean): Option[A] =
-    flatMap(v => if (f(v)) None else Some(v))
+    flatMap(v => if (f(v)) Some(v) else None)
 }
 
 case class Some[+A](get: A) extends Option[A]

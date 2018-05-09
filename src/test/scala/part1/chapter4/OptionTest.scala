@@ -25,9 +25,10 @@ class OptionTest extends FunSpec with Matchers {
       }
       it("filter: Should return None if there is a value and it satisfies predicate, otherwise return this") {
         val some2 = Some(8)
-        some.filter(_ % 2 == 1) shouldEqual None
-        some2.filter(_ % 2 == 1) shouldEqual some2
+        some.filter(_ % 2 == 1) shouldEqual some
+        some2.filter(_ % 2 == 1) shouldEqual None
         None.filter(e => e != e) shouldEqual None
+        some2.filter(_ > 8) shouldEqual None
       }
     }
   }
