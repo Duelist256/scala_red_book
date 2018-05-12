@@ -48,5 +48,29 @@ class OptionTest extends FunSpec with Matchers {
         map2(Some(210), None)((a, b) => a) shouldEqual None
       }
     }
+    describe("Exercise 4.4: sequence") {
+      import Option.sequence
+      it("should return option of list") {
+        val listOfOptions = List(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7))
+        sequence(listOfOptions) shouldEqual Some(List(1, 2, 3, 4, 5, 6, 7))
+        sequence(listOfOptions :+ None) shouldEqual None
+      }
+    }
+    describe("Exercise 4.5: traverse") {
+      import Option.traverse
+      it("should return option of list") {
+        val list = List(1, 2, 3, 4, 5, 6, 7)
+        traverse(list)(e => Some(e * 2)) shouldEqual Some(List(2, 4, 6, 8, 10, 12, 14))
+        traverse(List())(e => Some(e)) shouldEqual Some(Nil)
+      }
+    }
+    describe("Exercise 4.5: sequenceViaTraverse") {
+      import Option.sequenceViaTraverse
+      it("should return option of list") {
+        val listOfOptions = List(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7))
+        sequenceViaTraverse(listOfOptions) shouldEqual Some(List(1, 2, 3, 4, 5, 6, 7))
+        sequenceViaTraverse(listOfOptions :+ None) shouldEqual None
+      }
+    }
   }
 }

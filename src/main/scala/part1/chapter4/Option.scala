@@ -60,16 +60,22 @@ object Option {
   def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
     a.flatMap(first => b.map(second => f(first, second)))
 
-  /* TODO: Exercise 4.4
+  /* Exercise 4.4
      Write a function sequence that combines a list of Options into one Option containing
      a list of all the Some values in the original list. If the original list contains None even
      once, the result of the function should be None; otherwise the result should be Some
      with a list of all the values. Here is its signature:
      def sequence[A](a: List[Option[A]]): Option[List[A]] */
-  //   import part1.chapter3._
-  // def sequence[A](a: List[Option[A]]): Option[List[A]] = {
-  //   import part1.chapter3.List.foldRight
-  //   foldRight[List[A], Option[List[A]]](a, Some(Nil: List[A]))((a, b) => map2(a, b)((x, y) => Cons[A](x, y)))
-  //   // a: Option[A], b: Option[List[A]]
-  // }
+  def sequence[A](a: List[Option[A]]): Option[List[A]] =
+    a.foldRight[Option[List[A]]](Some(Nil))((elem, acc) => map2(elem, acc)((elem, acc) => elem :: acc))
+
+  /* Exercise 4.5
+     Implement this function. It’s straightforward to do using map and sequence, but try
+     for a more efficient implementation that only looks at the list once. In fact, implement
+     sequence in terms of traverse. */
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight[Option[List[B]]](Some(Nil))((elem, acc) => map2(f(elem), acc)((elem, acc) => elem :: acc))
+
+  def sequenceViaTraverse[A](a: List[Option[A]]): Option[List[A]] =
+    traverse(a)(elem => elem)
 }
