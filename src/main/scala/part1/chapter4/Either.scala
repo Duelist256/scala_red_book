@@ -64,17 +64,11 @@ object Either {
     mkName(name).map2(mkAge(age))((n, a) => Person(n, a))
 
   def mkPerson2(name: String, age: Int): Either[List[String], Person] =
-    mkName(name) match {
-      case Right(n) =>
-        mkAge(age) match {
-          case Right(a) => Right(Person(n, a))
-          case Left(e) => Left(List(e))
-        }
-      case Left(e) =>
-        mkAge(age) match {
-          case Left(e2) => Left(List(e2, e))
-          case _ => Left(List(e))
-        }
+    (mkName(name), mkAge(age)) match {
+      case (Right(n), Right(a)) => Right(Person(n, a))
+      case (Left(e), Left(e2)) => Left(List(e2, e))
+      case (_, Left(e2)) => Left(List(e2))
+      case (Left(e), _) => Left(List(e))
     }
 }
 
