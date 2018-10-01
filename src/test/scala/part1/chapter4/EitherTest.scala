@@ -1,6 +1,7 @@
 package part1.chapter4
 
-import org.scalatest.{FunSpec, FunSuite, Matchers}
+import org.scalatest.{FunSpec, Matchers}
+import part1.chapter4.Either.{Person, Name, Age}
 
 class EitherTest  extends FunSpec with Matchers {
   describe("Either test") {
@@ -45,6 +46,14 @@ class EitherTest  extends FunSpec with Matchers {
         Either.traverse(list)(e => Right(e * 5)) shouldEqual Right(List(25, 50, 75))
         val list2 = List(Left(5), Right(10), Left(12), Right(15))
         Either.traverse(list2)(e => Left(e)) shouldEqual Left(Left(5))
+      }
+    }
+    describe("Exercise 4.8: mkPerson2") {
+      it("should return person or list of every error") {
+        Either.mkPerson("", -1) shouldEqual Left("Name is empty.")
+        Either.mkPerson2("", -1) shouldEqual Left(List("Age is out of range.", "Name is empty."))
+        Either.mkPerson2("", 1) shouldEqual Left(List("Name is empty."))
+        Either.mkPerson2("s", 1) shouldEqual Right(Person(Name("s"), Age(1)))
       }
     }
   }
