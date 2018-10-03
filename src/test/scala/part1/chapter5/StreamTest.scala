@@ -141,5 +141,42 @@ class StreamTest extends FunSpec with Matchers {
         stream.flatMap(v => Stream(v * 2)).toList shouldEqual List()
       }
     }
+    describe("Exercise 5.8: constant") {
+      it("should return infinite stream of specified value") {
+        val stream = Stream.constant(1)
+        stream.take(10).toList shouldEqual List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        stream.take(5).toList shouldEqual List(1, 1, 1, 1, 1)
+        stream.take(2).toList shouldEqual List(1, 1)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.9: from") {
+      it("should return infinite stream integers starting from n and incremented") {
+        val stream = Stream.from(1)
+        stream.take(10).toList shouldEqual List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        stream.take(5).toList shouldEqual List(1, 2, 3, 4, 5)
+        stream.take(2).toList shouldEqual List(1, 2)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.10: fibs") {
+      it("should return infinite stream of Fibonacci numbers") {
+        val stream = Stream.fibs()
+        stream.take(10).toList shouldEqual List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+        stream.take(7).toList shouldEqual List(0, 1, 1, 2, 3, 5, 8)
+        stream.take(3).toList shouldEqual List(0, 1, 1)
+        stream.take(2).toList shouldEqual List(0, 1)
+        stream.take(1).toList shouldEqual List(0)
+      }
+    }
+    describe("Exercise 5.11: unfold") {
+      it("should return infinite stream integers starting from 10 and incremented") {
+        val stream = Stream.unfold(1)(s => Some((s, s + 1)))
+        stream.take(10).toList shouldEqual List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        stream.take(5).toList shouldEqual List(1, 2, 3, 4, 5)
+        stream.take(2).toList shouldEqual List(1, 2)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
   }
 }
