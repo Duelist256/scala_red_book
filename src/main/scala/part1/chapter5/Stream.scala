@@ -65,6 +65,16 @@ sealed trait Stream[+A] {
   def append[B >: A](other: => Stream[B]): Stream[B] = foldRight[Stream[B]](other)((h, acc) => Stream.cons(h, acc))
   def flatMap[B](f: A => Stream[B]): Stream[B] = foldRight[Stream[B]](Empty)((a, acc) => f(a).append(acc))
 
+  /* TODO Exercise 5.13
+     Use unfold to implement map, take, takeWhile, zipWith (as in chapter 3), and
+     zipAll. The zipAll function should continue the traversal as long as either stream
+     has more elements—it uses Option to indicate whether each stream has been
+     exhausted. */
+  def mapU[B](f: A => B): Stream[B] = ???
+  def takeU(n: Int): Stream[A] = ???
+  def takeWhileU(p: A => Boolean): Stream[A] = ???
+  def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C]  = ???
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
@@ -78,6 +88,8 @@ object Stream {
   def empty[A]: Stream[A] = Empty
   def apply[A](as: A*): Stream[A] =
     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
+
+  val ones: Stream[Int] = Stream.cons(1, ones)
 
   /* Exercise 5.8
      Generalize ones slightly to the function constant, which returns an infinite Stream of
@@ -107,4 +119,14 @@ object Stream {
       case None => empty[A]
     }
   }
+
+  /* Exercise 5.12
+     Write fibs, from, constant, and ones in terms of unfold */
+  def fibsU(): Stream[Int] = unfold((0, 1)) {case (prev, next) => Some(prev, (next, prev + next))}
+
+  def fromU(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
+
+  def constantU[A](a: A): Stream[A] = unfold(a)(s => Some(s, s))
+
+  val onesU: Stream[Int] = unfold(1)(s => Some(s, s))
 }

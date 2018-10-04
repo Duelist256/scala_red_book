@@ -178,5 +178,42 @@ class StreamTest extends FunSpec with Matchers {
         stream.take(0).toList shouldEqual List()
       }
     }
+    describe("Exercise 5.12: fibsU") {
+      it("should return infinite stream of specified value") {
+        val stream = Stream.fibsU()
+        stream.take(10).toList shouldEqual List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34)
+        stream.take(7).toList shouldEqual List(0, 1, 1, 2, 3, 5, 8)
+        stream.take(3).toList shouldEqual List(0, 1, 1)
+        stream.take(2).toList shouldEqual List(0, 1)
+        stream.take(1).toList shouldEqual List(0)
+      }
+    }
+    describe("Exercise 5.12: fromU") {
+      it("should return infinite stream of specified value") {
+        val stream = Stream.fromU(1)
+        stream.take(10).toList shouldEqual List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        stream.take(5).toList shouldEqual List(1, 2, 3, 4, 5)
+        stream.take(2).toList shouldEqual List(1, 2)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.12: constantU") {
+      it("should return infinite stream of specified value") {
+        val stream = Stream.constantU(1)
+        stream.take(10).toList shouldEqual List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        stream.take(5).toList shouldEqual List(1, 1, 1, 1, 1)
+        stream.take(2).toList shouldEqual List(1, 1)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.12: onesU") {
+      it("should return infinite stream of specified value") {
+        val stream = Stream.onesU
+        stream.take(10).toList shouldEqual List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        stream.take(5).toList shouldEqual List(1, 1, 1, 1, 1)
+        stream.take(2).toList shouldEqual List(1, 1)
+        stream.take(0).toList shouldEqual List()
+      }
+    }
   }
 }
