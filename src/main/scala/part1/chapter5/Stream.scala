@@ -70,11 +70,34 @@ sealed trait Stream[+A] {
      zipAll. The zipAll function should continue the traversal as long as either stream
      has more elements—it uses Option to indicate whether each stream has been
      exhausted. */
-  def mapU[B](f: A => B): Stream[B] = ???
-  def takeU(n: Int): Stream[A] = ???
-  def takeWhileU(p: A => Boolean): Stream[A] = ???
-  def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C]  = ???
-  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
+  def mapU[B](f: A => B): Stream[B] = Stream.unfold[B, Stream[A]](this) {
+    case Cons(h, t) => Some((f(h()), t()))
+    case Empty => None
+  }
+
+  def takeU(n: Int): Stream[A] = Stream.unfold[A, (Int, Stream[A])]((n, this)) {
+    case (n, Cons(h, t)) if n > 0 => Some((h(), (n - 1, t())))
+    case _ => None
+  }
+
+  def takeWhileU(p: A => Boolean): Stream[A] = Stream.unfold[A, Stream[A]](this) {
+    case Empty => None
+    case Cons(h, t) =>
+      val head = h()
+      if (p(head)) Some((head, t())) else None
+  }
+
+  def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C]  = Stream.unfold((this, s2)) {
+    case (Cons(h, t), Cons(h2, t2)) => Some((f(h(), h2()), (t(), t2())))
+    case _ => None
+  }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = Stream.unfold((this, s2)) {
+    case (Empty, Empty) => None
+    case (Empty, Cons(h2, t2)) => Some(((None, Some(h2())), (Empty, t2())))
+    case (Cons(h, t), Empty) => Some(((Some(h()), None), (t(), Empty)))
+    case (Cons(h, t), Cons(h2, t2)) => Some(((Some(h()), Some(h2())), (t(), t2())))
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]

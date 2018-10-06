@@ -215,5 +215,93 @@ class StreamTest extends FunSpec with Matchers {
         stream.take(0).toList shouldEqual List()
       }
     }
+    describe("Exercise 5.13: mapU") {
+      it("should multiply each element by 2") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.map(_ * 2).toList shouldEqual List(2, 6, 8, 16)
+      }
+      it("""should concatenate each element with "part"""") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.map(n => s"part$n").toList shouldEqual List("part1", "part3", "part4", "part8")
+      }
+      it("should return empty stream") {
+        val stream = Stream[Int]()
+        stream.map(_ * 2).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.13: takeU") {
+      it("should take no elements from the stream") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(-1).toList shouldEqual List()
+      }
+      it("should take no elements from the stream 2") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(0).toList shouldEqual List()
+      }
+      it("should take first element from the stream") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(1).toList shouldEqual List(1)
+      }
+      it("should take first 3 elements from the stream") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(3).toList shouldEqual List(1, 2, 3)
+      }
+      it("should take first 5 elements from the stream") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(5).toList shouldEqual List(1, 2, 3, 4, 5)
+      }
+      it("should take all elements from the stream") {
+        val stream = Stream(1, 2, 3, 4, 5)
+        stream.takeU(55).toList shouldEqual List(1, 2, 3, 4, 5)
+      }
+    }
+    describe("Exercise 5.13: takeWhileU") {
+      it("should take no elements from the stream") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.takeWhileU(_ < 0).toList shouldEqual List()
+      }
+      it("should take first element from the stream") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.takeWhileU(_ == 1).toList shouldEqual List(1)
+      }
+      it("should take first 2 elements from the stream") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.takeWhileU(_ % 2 == 1).toList shouldEqual List(1, 3)
+      }
+      it("should take all elements from the stream") {
+        val stream = Stream(1, 3, 4, 8)
+        stream.takeWhileU(_ > 0).toList shouldEqual List(1, 3, 4, 8)
+      }
+    }
+    describe("Exercise 5.13: zipWith") {
+      it("should sum each element of the streams") {
+        val stream = Stream(1, 2, 3, 4)
+        val stream2 = Stream(5, 6, 7, 8)
+        stream.zipWith(stream2)(_ + _).toList shouldEqual List(6, 8, 10, 12)
+        stream.takeU(3).zipWith(stream2)(_ + _).toList shouldEqual List(6, 8, 10)
+        stream.zipWith(stream2.takeU(3))(_ + _).toList shouldEqual List(6, 8, 10)
+        stream.takeU(2).zipWith(stream2)(_ + _).toList shouldEqual List(6, 8)
+        stream.zipWith(stream2.takeU(2))(_ + _).toList shouldEqual List(6, 8)
+        stream.takeU(1).zipWith(stream2)(_ + _).toList shouldEqual List(6)
+        stream.zipWith(stream2.takeU(1))(_ + _).toList shouldEqual List(6)
+        stream.take(0).zipWith(stream2)(_ + _).toList shouldEqual List()
+        stream.zipWith(stream2.take(0))(_ + _).toList shouldEqual List()
+      }
+    }
+    describe("Exercise 5.13: zipAll") {
+      it("should zip each element of the streams") {
+        val stream = Stream(1, 2, 3, 4)
+        val stream2 = Stream(5, 6, 7, 8)
+        stream.zipAll(stream2).toList shouldEqual List((Some(1), Some(5)), (Some(2), Some(6)), (Some(3), Some(7)), (Some(4), Some(8)))
+        stream.takeU(3).zipAll(stream2).toList shouldEqual List((Some(1), Some(5)), (Some(2), Some(6)), (Some(3), Some(7)), (None, Some(8)))
+        stream.zipAll(stream2.takeU(3)).toList shouldEqual List((Some(1), Some(5)), (Some(2), Some(6)), (Some(3), Some(7)), (Some(4), None))
+        stream.takeU(2).zipAll(stream2).toList shouldEqual List((Some(1), Some(5)), (Some(2), Some(6)), (None, Some(7)), (None, Some(8)))
+        stream.zipAll(stream2.takeU(2)).toList shouldEqual List((Some(1), Some(5)), (Some(2), Some(6)), (Some(3), None), (Some(4), None))
+        stream.takeU(1).zipAll(stream2).toList shouldEqual List((Some(1), Some(5)), (None, Some(6)), (None, Some(7)), (None, Some(8)))
+        stream.zipAll(stream2.takeU(1)).toList shouldEqual List((Some(1), Some(5)), (Some(2), None), (Some(3), None), (Some(4), None))
+        stream.takeU(0).zipAll(stream2).toList shouldEqual List((None, Some(5)), (None, Some(6)), (None, Some(7)), (None, Some(8)))
+        stream.zipAll(stream2.takeU(0)).toList shouldEqual List((Some(1), None), (Some(2), None), (Some(3), None), (Some(4), None))
+      }
+    }
   }
 }
