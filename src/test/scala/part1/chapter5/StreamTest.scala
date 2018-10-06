@@ -303,5 +303,39 @@ class StreamTest extends FunSpec with Matchers {
         stream.zipAll(stream2.takeU(0)).toList shouldEqual List((Some(1), None), (Some(2), None), (Some(3), None), (Some(4), None))
       }
     }
+    describe("Exercise 5.14: startsWith") {
+      it("should return true if second stream is prefix of the current") {
+        val stream = Stream(1, 2, 3, 4)
+        val stream2 = Stream(1, 2, 3, 4)
+        stream.startsWith(stream2) shouldBe true
+        stream.startsWith(stream2.take(3)) shouldBe true
+        stream.startsWith(stream2.take(2)) shouldBe true
+        stream.startsWith(stream2.take(1)) shouldBe true
+        stream.startsWith(stream2.take(0)) shouldBe true
+
+        stream.take(3).startsWith(stream2) shouldBe false
+        stream.take(2).startsWith(stream2) shouldBe false
+        stream.take(1).startsWith(stream2) shouldBe false
+        stream.take(0).startsWith(stream2) shouldBe false
+
+        stream.startsWith(Stream.empty[Int]) shouldBe true
+        Stream.empty[Int].startsWith(stream2) shouldBe false
+
+        Stream.empty[Int].startsWith(Stream.empty[Int]) shouldBe true
+      }
+    }
+    describe("Exercise 5.15: tails") {
+      it("should return stream of suffixes") {
+        val stream = Stream(1, 2, 3, 4)
+        stream.tails.map(_.toList).toList shouldEqual List(List(1, 2, 3, 4), List(2, 3, 4), List(3, 4), List(4), List())
+      }
+    }
+    describe("Exercise 5.16: scanRight") {
+      it("should return stream of intermediate computations") {
+        val stream = Stream(1, 2, 3)
+        stream.scanRight(0)(_ + _).toList shouldEqual List(6,5,3,0)
+        Stream[Int]().scanRight(0)(_ + _).toList shouldEqual List(0)
+      }
+    }
   }
 }

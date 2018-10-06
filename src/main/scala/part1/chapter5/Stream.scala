@@ -65,7 +65,7 @@ sealed trait Stream[+A] {
   def append[B >: A](other: => Stream[B]): Stream[B] = foldRight[Stream[B]](other)((h, acc) => Stream.cons(h, acc))
   def flatMap[B](f: A => Stream[B]): Stream[B] = foldRight[Stream[B]](Empty)((a, acc) => f(a).append(acc))
 
-  /* TODO Exercise 5.13
+  /* Exercise 5.13
      Use unfold to implement map, take, takeWhile, zipWith (as in chapter 3), and
      zipAll. The zipAll function should continue the traversal as long as either stream
      has more elements—it uses Option to indicate whether each stream has been
@@ -98,6 +98,49 @@ sealed trait Stream[+A] {
     case (Cons(h, t), Empty) => Some(((Some(h()), None), (t(), Empty)))
     case (Cons(h, t), Cons(h2, t2)) => Some(((Some(h()), Some(h2())), (t(), t2())))
   }
+
+  /* Exercise 5.14
+     Hard: Implement startsWith using functions you’ve written. It should check if one
+     Stream is a prefix of another. For instance, Stream(1,2,3) startsWith Stream(1,2)
+     would be true. */
+  def startsWith[B >: A](s: Stream[B]): Boolean = zipAll(s).forAll {
+    case (Some(v), Some(v2)) => v == v2
+    case (_, None) => true
+    case _ => false
+  }
+
+  /* Exercise 5.15
+     Implement tails using unfold. For a given Stream, tails returns the Stream of suffixes
+     of the input sequence, starting with the original Stream. For example, given
+     Stream(1,2,3), it would return Stream(Stream(1,2,3), Stream(2,3), Stream(3), Stream()).*/
+  def tails: Stream[Stream[A]] =
+    Stream.unfold(this) {
+      case Empty => None
+      case s @ Cons(_, t) => Some((s, t()))
+    }.append(Stream(Empty))
+
+  def hasSubsequence[B >: A](s: Stream[B]): Boolean =
+    tails exists (_ startsWith s)
+
+  /* Exercise 5.16
+     Hard: Generalize tails to the function scanRight, which is like a foldRight that
+     returns a stream of the intermediate results. For example:
+      scala> Stream(1,2,3).scanRight(0)(_ + _).toList
+      res0: List[Int] = List(6,5,3,0)
+     This example should be equivalent to the expression List(1+2+3+0, 2+3+0, 3+0,0).
+     Your function should reuse intermediate results so that traversing a Stream with n
+     elements always takes time linear in n. Can it be implemented using unfold? How, or
+     why not? Could it be implemented using another function we’ve written?*/
+
+  def scanRight[B](z: B)(f: (A, B) => B): Stream[B] = foldRight(Stream(z)) {
+    case (v, s @ Cons(h, _)) => Stream.cons(f(v, h()), s)
+  }
+
+  // scanr via unfold. It's worse than O(n)
+  def scanRightU[B](z: B)(f: (A, B) => B): Stream[B] = Stream.unfold(this) {
+    case s @ Cons(_, t) => Some((s.foldRight(z)((v, acc) => f(v, acc)), t()))
+    case Empty => None
+  }.append(Stream(z))
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
