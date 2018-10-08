@@ -79,5 +79,41 @@ class RNGTest extends FunSpec with Matchers {
         list.forall(i => i >= Int.MinValue && i <= Int.MaxValue) shouldBe true
       }
     }
+    describe("Exercise 6.5: doubleM") {
+      it("should return double from 0 inclusive to 1 exclusive") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val (_, list) = (initialValue to MAX).foldLeft((initialRng, List[Double]())) {
+          case ((rng, acc), _) =>
+            val (value, newRng) = RNG.doubleM(rng)
+            (newRng, value :: acc)
+        }
+        list.forall(v => v >= 0.0 && v < 1.0) shouldBe true
+      }
+    }
+    describe("Exercise 6.6: map2") {
+      it("should return random int and random double from 0 inclusive to 1 exclusive") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val (_, list) = (initialValue to MAX).foldLeft((initialRng, List[(Int, Double)]())) {
+          case ((rng, acc), _) =>
+            val (value, newRng) = RNG.map2(RNG.int, RNG.double)((_, _))(rng)
+            (newRng, value :: acc)
+        }
+        list.forall {
+          case (i, d) => (i >= Int.MinValue && i <= Int.MaxValue) && (d >= 0.0 && d < 1.0)
+        } shouldBe true
+      }
+    }
+    describe("Exercise 6.7: sequence") {
+      it("should return list of random ints") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+
+        val ints: Int => Rand[List[Int]] = count => RNG.sequence[Int](List.fill[Rand[Int]](count)(_.nextInt))
+        val (list, _)= ints(MAX / 10)(initialRng)
+        list.forall(i => i >= Int.MinValue && i <= Int.MaxValue) shouldBe true
+      }
+    }
   }
 }

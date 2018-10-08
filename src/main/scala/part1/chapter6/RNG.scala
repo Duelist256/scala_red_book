@@ -23,8 +23,8 @@ object RNG {
      x.toDouble to convert an x: Int to a Double. */
   def double(rng: RNG): (Double, RNG) = {
     val (v, newRng) = nonNegativeInt(rng)
-    val newValue = if (v == Int.MaxValue) v - 1 else v
-    ((v / Int.MaxValue).toDouble, newRng)
+    val newValue = (if (v == Int.MaxValue) v - 1 else v) / Int.MaxValue
+    (newValue.toDouble, newRng)
   }
 
   /* Exercise 6.3
@@ -56,5 +56,50 @@ object RNG {
       case ((acc, currentRng), _) =>
         val (value, newRng) = currentRng.nextInt
         (value :: acc, newRng)
+    }
+
+  val int: Rand[Int] = _.nextInt
+
+  def unit[A](a: A): Rand[A] = rng => (a, rng)
+
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
+    rng => {
+      val (a, rng2) = s(rng)
+      (f(a), rng2)
+    }
+
+  def nonNegativeEven: Rand[Int] = map(nonNegativeInt)(i => i - i % 2)
+
+  /* EXERCISE 6.5
+     Use map to reimplement double in a more elegant way. See exercise 6.2. */
+  def doubleM: Rand[Double] = map(nonNegativeInt)(v => ((if (v == Int.MaxValue) v - 1 else v) / Int.MaxValue).toDouble)
+
+  /* Exercise 6.6
+     Write the implementation of map2 based on the following signature. This function
+     takes two actions, ra and rb, and a function f for combining their results, and returns
+     a new action that combines them: */
+  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
+    rng => {
+      val (a, rng2) = ra(rng)
+      val (b, rng3) = rb(rng2)
+      (f(a, b), rng3)
+    }
+
+  def both[A, B](ra: Rand[A], rb: Rand[B]): Rand[(A, B)] = map2(ra, rb)((_, _))
+
+  val randIntDouble: Rand[(Int, Double)] = both(int, double)
+
+  val randDoubleInt: Rand[(Double, Int)] = both(double, int)
+
+  /* Exercise 6.7
+     Hard: If you can combine two RNG transitions, you should be able to combine a whole
+     list of them. Implement sequence for combining a List of transitions into a single
+     transition. Use it to reimplement the ints function you wrote before. For the latter,
+     you can use the standard library function List.fill(n)(x) to make a list with x
+     repeated n times. */
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs match {
+      case Nil => unit[List[A]](List())
+      case x :: xs => map2(x, sequence(xs))(_ :: _)
     }
 }
