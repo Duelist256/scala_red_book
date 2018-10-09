@@ -102,4 +102,30 @@ object RNG {
       case Nil => unit[List[A]](List())
       case x :: xs => map2(x, sequence(xs))(_ :: _)
     }
+
+
+  /* Exercise 6.8
+     Implement flatMap, and then use it to implement nonNegativeLessThan.*/
+  def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] =
+    rng => {
+      val (a, rng2) = f(rng)
+      g(a)(rng2)
+    }
+
+  def nonNegativeLessThan(n: Int): Rand[Int] =
+    flatMap[Int, Int](nonNegativeInt) { i =>
+      val mod = i % n
+      if (i + (n-1) - mod >= 0) unit[Int](mod)
+      else nonNegativeLessThan(n)
+    }
+
+  /* Exercise 6.9
+     Reimplement map and map2 in terms of flatMap. The fact that this is possible is what
+     we’re referring to when we say that flatMap is more powerful than map and map2. */
+  def mapFM[A, B](s: Rand[A])(f: A => B): Rand[B] = flatMap[A, B](s)(a => unit[B](f(a)))
+
+  def map2FM[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
+    flatMap[A, C](ra)(a => mapFM[B, C](rb)(b => f(a, b)))
+
+  def rollDie: Rand[Int] = map(nonNegativeLessThan(6))(_ + 1)
 }

@@ -115,5 +115,39 @@ class RNGTest extends FunSpec with Matchers {
         list.forall(i => i >= Int.MinValue && i <= Int.MaxValue) shouldBe true
       }
     }
+    describe("Exercise 6.8: flatMap and nonNegativeLessThan") {
+      it("should return non negative number that less than 10") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val n = 10
+
+        val (v, _) = RNG.nonNegativeLessThan(n)(initialRng)
+        (v >= 0 && v < n) shouldBe true
+      }
+    }
+    describe("Exercise 6.9: mapFM") {
+      it("should map random integer N to string as partN") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val (i, _) = RNG.int(initialRng)
+
+        val (result, _) = RNG.mapFM[Int, String](RNG.int)(n => s"part$n")(initialRng)
+        result shouldEqual s"part$i"
+      }
+    }
+    describe("Exercise 6.9: map2FM") {
+      it("should return random int and random double from 0 inclusive to 1 exclusive") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val (_, list) = (initialValue to MAX).foldLeft((initialRng, List[(Int, Double)]())) {
+          case ((rng, acc), _) =>
+            val (value, newRng) = RNG.map2(RNG.int, RNG.double)((_, _))(rng)
+            (newRng, value :: acc)
+        }
+        list.forall {
+          case (i, d) => (i >= Int.MinValue && i <= Int.MaxValue) && (d >= 0.0 && d < 1.0)
+        } shouldBe true
+      }
+    }
   }
 }
