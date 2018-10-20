@@ -56,4 +56,41 @@ object Par {
      Implement parFilter, which filters elements of a list in parallel.*/
   def parFilter[A](as: List[A])(f: A => Boolean): Par[List[A]] =
     map(parMap[A, List[A]](as)(a => if (f(a)) List(a) else Nil))(_.flatten)
+
+  /* Exercise 7.11
+     Implement choiceN and then choice in terms of choiceN. */
+  def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
+    ec => {
+      val i = run(ec)(n).get()
+      choices(i)(ec)
+    }
+
+  def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    ec => choiceN(map(cond)(if (_) 0 else 1))(List(t, f))(ec)
+
+  /* Exercise 7.12
+     There’s still something rather arbitrary about choiceN. The choice of List seems
+     overly specific. Why does it matter what sort of container we have? For instance, what
+     if, instead of a list of computations, we have a Map of them:18 */
+  def choiceMap[K,V](key: Par[K])(choices: Map[K,Par[V]]): Par[V] =
+    ec => choices(key(ec).get())(ec)
+
+  /* Exercise 7.13
+     Implement this new primitive chooser, and then use it to implement choice and
+     choiceN.*/
+  def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] = ec =>
+    choices(pa(ec).get())(ec)
+
+  def choice2[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] = chooser(cond)(if (_) t else f)
+
+  def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] = chooser(n)(choices(_))
+
+  /* Exercise 7.14
+     Implement join. Can you see how to implement flatMap using join? And can you
+     implement join using flatMap? */
+  def join[A](a: Par[Par[A]]): Par[A] = ec => a(ec).get()(ec)
+
+  def flatMap[A,B](a: Par[A])(f: A => Par[B]): Par[B] = join(map(a)(f))
+
+  def joinViaFM[A](a: Par[Par[A]]): Par[A] = flatMap(a)(identity)
 }
