@@ -144,6 +144,13 @@ sealed trait Stream[+A] {
     case s @ Cons(_, t) => Some((s.foldRight(z)((v, acc) => f(v, acc)), t()))
     case Empty => None
   }.append(Stream(z))
+
+  def find(f: A => Boolean): Option[A] = this match {
+    case Empty => None
+    case Cons(h, t) =>
+      val v = h()
+      if (f(v)) Some(v) else t().find(f)
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
