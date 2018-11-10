@@ -66,5 +66,18 @@ class GenTest extends FunSpec with Matchers {
         result.forall(_ == value)
       }
     }
+    describe("Exercise 8.12: listOf") {
+      it("should return list of specified value and size") {
+        val initialValue = 1
+        val initialRng: RNG = SimpleRNG(initialValue)
+        val size = 10
+        val value = 5
+        val genValue = Gen.unit(value)
+
+        val (result, _) = Gen.listOf(genValue).forSize(size).sample.run(initialRng)
+        result.size shouldEqual size
+        result.forall(_ == value)
+      }
+    }
   }
 }

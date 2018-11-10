@@ -13,6 +13,11 @@ case class Gen[A](sample: State[RNG,A]) {
      Implement helper functions for converting Gen to SGen. You can add this as a method
      on Gen.*/
   def unsized: SGen[A] = SGen(_ => this)
+
+  /* TODO Exercise 8.11
+     Not surprisingly, SGen at a minimum supports many of the same operations as Gen,
+     and the implementations are rather mechanical. Define some convenience functions
+     on SGen that simply delegate to the corresponding functions on Gen.5 */
 }
 
 object Gen {
@@ -58,4 +63,9 @@ object Gen {
      Implement weighted, a version of union that accepts a weight for each Gen and generates
      values from each Gen with probability proportional to its weight. */
   def weighted[A](g1: (Gen[A],Double), g2: (Gen[A],Double)): Gen[A] = ???
+
+  /* Exercise 8.12
+     Implement a listOf combinator that doesn’t accept an explicit size. It should return an
+     SGen instead of a Gen. The implementation should generate lists of the requested size. */
+  def listOf[A](g: Gen[A]): SGen[List[A]] = SGen(listOfN(_, g))
 }
