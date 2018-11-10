@@ -8,6 +8,11 @@ case class Gen[A](sample: State[RNG,A]) {
      listOfN. Put flatMap and listOfN in the Gen class. */
   def flatMap[B](f: A => Gen[B]): Gen[B] = Gen(sample.flatMap(a => f(a).sample))
   def listOfN(size: Gen[Int]): Gen[List[A]] = size.flatMap(Gen.listOfN(_, this))
+
+  /* Exercise 8.10
+     Implement helper functions for converting Gen to SGen. You can add this as a method
+     on Gen.*/
+  def unsized: SGen[A] = SGen(_ => this)
 }
 
 object Gen {
