@@ -1,8 +1,14 @@
 package part1.chapter8
 
-import part1.chapter6.{RNG, SimpleRNG, State}
+import part1.chapter6.{RNG, State}
 
-case class Gen[A](sample: State[RNG,A])
+case class Gen[A](sample: State[RNG,A]) {
+  /* Exercise 8.6
+     Implement flatMap, and then use it to implement this more dynamic version of
+     listOfN. Put flatMap and listOfN in the Gen class. */
+  def flatMap[B](f: A => Gen[B]): Gen[B] = Gen(sample.flatMap(a => f(a).sample))
+  def listOfN(size: Gen[Int]): Gen[List[A]] = size.flatMap(Gen.listOfN(_, this))
+}
 
 object Gen {
   /* Exercise 8.4
@@ -36,4 +42,15 @@ object Gen {
       }
     )
   )
+
+  /* Exercise 8.7
+     Implement union, for combining two generators of the same type into one, by pulling
+     values from each generator with equal likelihood. */
+  def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] =
+    boolean.flatMap(if (_) g1 else g2)
+
+  /* TODO Exercise 8.8
+     Implement weighted, a version of union that accepts a weight for each Gen and generates
+     values from each Gen with probability proportional to its weight. */
+  def weighted[A](g1: (Gen[A],Double), g2: (Gen[A],Double)): Gen[A] = ???
 }
