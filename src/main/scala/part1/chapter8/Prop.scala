@@ -1,7 +1,7 @@
 package part1.chapter8
 
-import part1.chapter6.RNG
-import part1.chapter8.Prop.{TestCases, MaxSize}
+import part1.chapter6.{RNG, SimpleRNG}
+import part1.chapter8.Prop.{MaxSize, TestCases}
 import part1.chapter5.Stream
 
 case class Prop(run: (MaxSize,TestCases,RNG) => Result) {
@@ -41,12 +41,9 @@ object Prop {
 
   def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop {
     (max, n, rng) => randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
-      case (a, i) =>
-        try {
-          if (f(a)) Passed else Falsified(a.toString, i)
-        } catch {
-          case e: Exception => Falsified(buildMsg(a, e), i)
-        }
+      case (a, i) => try {
+        if (f(a)) Passed else Falsified(a.toString, i)
+      } catch { case e: Exception => Falsified(buildMsg(a, e), i) }
     }.find(_.isFalsified).getOrElse(Passed)
   }
 
@@ -59,10 +56,10 @@ object Prop {
       s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
 
   def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
-    forAll(g.forSize(_))(f)
+    forAll(g(_))(f)
 
   def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
-    (max,n,rng) =>
+    (max, n, rng) =>
       val casesPerSize = (n + (max - 1)) / max
       val props: Stream[Prop] =
         Stream.from(0).take((n min max) + 1).map(i => forAll(g(i))(f))
@@ -72,4 +69,15 @@ object Prop {
         }).toList.reduce(_ && _)
       prop.run(max,n,rng)
   }
+
+  def run(p: Prop,
+          maxSize: Int = 100,
+          testCases: Int = 100,
+          rng: RNG = SimpleRNG(System.currentTimeMillis)): Unit =
+    p.run(maxSize, testCases, rng) match {
+      case Falsified(msg, n) =>
+        println(s"! Falsified after $n passed tests:\n $msg")
+      case Passed =>
+        println(s"+ OK, passed $testCases tests.")
+    }
 }
