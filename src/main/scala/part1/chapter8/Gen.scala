@@ -6,7 +6,7 @@ case class Gen[A](sample: State[RNG,A]) {
   /* Exercise 8.6
      Implement flatMap, and then use it to implement this more dynamic version of
      listOfN. Put flatMap and listOfN in the Gen class. */
-  def flatMap[B](f: A => Gen[B]): Gen[B] = Gen(sample.flatMap(a => f(a).sample))
+  def flatMap[B](f: A => Gen[B]): Gen[B] = Gen(sample.flatMap(f(_).sample))
   def listOfN(size: Gen[Int]): Gen[List[A]] = size.flatMap(Gen.listOfN(_, this))
 
   /* Exercise 8.10
@@ -68,4 +68,9 @@ object Gen {
      Implement a listOf combinator that doesn’t accept an explicit size. It should return an
      SGen instead of a Gen. The implementation should generate lists of the requested size. */
   def listOf[A](g: Gen[A]): SGen[List[A]] = SGen(listOfN(_, g))
+
+  /* Exercise 8.13
+     Define listOf1 for generating nonempty lists, and then update your specification of
+     max to use this generator */
+  def listOf1[A](g: Gen[A]): SGen[List[A]] = SGen(v => listOfN(v max 1, g))
 }
