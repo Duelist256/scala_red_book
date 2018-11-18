@@ -1,4 +1,4 @@
-package part1.chapter8
+package part2.chapter8
 
 import org.scalatest.{FunSpec, Matchers}
 import part1.chapter6.{RNG, SimpleRNG}

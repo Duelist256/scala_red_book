@@ -1,9 +1,9 @@
-package part1.chapter7
+package part2.chapter7
 
 import java.util.concurrent.Executors
 
 import org.scalatest.{FunSpec, Matchers}
-import part1._
+import part2._
 
 class ParTest extends FunSpec with Matchers {
   describe("ParTest") {

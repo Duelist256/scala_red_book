@@ -1,7 +1,7 @@
-package part1.chapter8
+package part2.chapter8
 
 import part1.chapter6.{RNG, SimpleRNG}
-import part1.chapter8.Prop.{MaxSize, TestCases}
+import part2.chapter8.Prop.{MaxSize, TestCases}
 import part1.chapter5.Stream
 
 case class Prop(run: (MaxSize,TestCases,RNG) => Result) {

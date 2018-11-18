@@ -1,4 +1,4 @@
-package part1.chapter7
+package part2.chapter7
 
 import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
 

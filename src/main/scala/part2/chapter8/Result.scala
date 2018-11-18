@@ -1,6 +1,6 @@
-package part1.chapter8
+package part2.chapter8
 
-import part1.chapter8.Prop.{FailedCase, SuccessCount}
+import part2.chapter8.Prop.{FailedCase, SuccessCount}
 
 sealed trait Result {
   def isFalsified: Boolean
