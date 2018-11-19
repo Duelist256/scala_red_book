@@ -24,13 +24,8 @@ object Gen {
   /* Exercise 8.4
      Implement Gen.choose using this representation of Gen. It should generate integers in
      the range start to stopExclusive. Feel free to use functions you’ve already written. */
-  def choose(start: Int, stopExclusive: Int): Gen[Int] = {
-    def foo(rng: RNG): (Int, RNG) = {
-      val (v, rng2) = rng.nextInt
-      if (v >= start && v < stopExclusive) (v, rng2) else foo(rng2)
-    }
-    Gen(State(foo))
-  }
+  def choose(start: Int, stopExclusive: Int): Gen[Int] =
+    Gen(State(RNG.nonNegativeInt).map(n => start + n % (stopExclusive - start)))
 
   /* Exercise 8.5
      Let’s see what else we can implement using this representation of Gen. Try implementing
