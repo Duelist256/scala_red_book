@@ -6,7 +6,14 @@ trait Parsers[ParseError, Parser[+_]] { self =>
   def run[A](p: Parser[A])(input: String): Either[ParseError, A]
   def char(c: Char): Parser[Char] = string(c.toString).map(_.head)
   def or[A](s1: Parser[A], s2: Parser[A]): Parser[A]
-  def listOfN[A](n: Int, p: Parser[A]): Parser[List[A]]
+
+  /* Exercise 9.4
+     Hard: Using map2 and succeed, implement the listOfN combinator from earlier. */
+  def listOfN[A](n: Int, p: Parser[A]): Parser[List[A]] =
+    if (n <= 0) succeed(List[A]())
+    else p.map2[List[A], List[A]](listOfN(n - 1, p))(_ :: _)
+
+
   def many[A](P: Parser[A]): Parser[List[A]]
   def succeed[A](a: A): Parser[A] = string("").map(_ => a)
   def map[A, B](a: Parser[A])(f: A => B): Parser[B]
@@ -21,6 +28,9 @@ trait Parsers[ParseError, Parser[+_]] { self =>
      The choice is up to you.*/
   def map2[A,B,C](p: Parser[A], p2: Parser[B])(f: (A,B) => C): Parser[C] =
     product(p, p2).map[C](f.tupled)
+
+  /* TODO Exercise 9.3
+     Hard: Before continuing, see if you can define many in terms of or, map2, and succeed. */
 
   implicit def string(s: String): Parser[String]
   implicit def operators[A](p: Parser[A]): ParserOps[A] = ParserOps[A](p)
