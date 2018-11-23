@@ -57,6 +57,17 @@ trait Parsers[ParseError, Parser[+_]] { self =>
   implicit def operators[A](p: Parser[A]): ParserOps[A] = ParserOps[A](p)
   implicit def asStringParser[A](a: A)(implicit f: A => Parser[String]): ParserOps[String] = ParserOps(f(a))
 
+  def label[A](msg: String)(p: Parser[A]): Parser[A]
+
+  case class Location(input: String, offset: Int = 0) {
+    lazy val line: Int = input.slice(0,offset+1).count(_ == '\n') + 1
+    lazy val col: Int = input.slice(0,offset+1).lastIndexOf('\n') match {
+      case -1 => offset + 1
+      case lineStart => offset - lineStart
+    }
+  }
+  def errorLocation(e: ParseError): Location
+  def errorMessage(e: ParseError): String
 
   case class ParserOps[A](p: Parser[A]) {
     def |[B >: A](p2: Parser[B]): Parser[B] = self.or(p, p2)
@@ -82,5 +93,13 @@ trait Parsers[ParseError, Parser[+_]] { self =>
 
     /* TODO Exercise 9.2
        Hard: Try coming up with laws to specify the behavior of product.*/
+
+//    def labelLaw[A](p: Parser[A], inputs: SGen[String]): Prop =
+//      forAll(inputs ** Gen.string) { case (input, msg) =>
+//        run(label(msg)(p))(input) match {
+//          case Left(e) => errorMessage(e) == msg
+//          case _ => true
+//        }
+//      }
   }
 }
