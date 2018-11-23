@@ -4,7 +4,10 @@ import part2.chapter8.{Gen, Prop}
 
 import scala.util.matching.Regex
 
-trait Parsers[ParseError, Parser[+_]] { self =>
+trait Parsers[Parser[+_]] { self =>
+
+  def run[A](p: Parser[A])(input: String): Either[ParseError, A]
+
   /* TODO Exercise 9.6
      Using flatMap and any other combinators, write the context-sensitive parser we
      couldn’t express earlier. To parse the digits, you can make use of a new primitive,
@@ -13,8 +16,6 @@ trait Parsers[ParseError, Parser[+_]] { self =>
      instance, "[a-zA-Z_][a-zA-Z0-9_]*".r.*/
   implicit def regex(r: Regex): Parser[String]
   implicit def string(s: String): Parser[String]
-
-  def run[A](p: Parser[A])(input: String): Either[ParseError, A]
 
   def or[A](s1: Parser[A], s2: => Parser[A]): Parser[A]
   def slice[A](a: Parser[A]): Parser[String]
@@ -59,6 +60,8 @@ trait Parsers[ParseError, Parser[+_]] { self =>
 
   def label[A](msg: String)(p: Parser[A]): Parser[A]
 
+  def scope[A](msg: String)(p: Parser[A]): Parser[A]
+
   case class Location(input: String, offset: Int = 0) {
     lazy val line: Int = input.slice(0,offset+1).count(_ == '\n') + 1
     lazy val col: Int = input.slice(0,offset+1).lastIndexOf('\n') match {
@@ -66,6 +69,9 @@ trait Parsers[ParseError, Parser[+_]] { self =>
       case lineStart => offset - lineStart
     }
   }
+
+  case class ParseError(stack: List[(Location,String)])
+
   def errorLocation(e: ParseError): Location
   def errorMessage(e: ParseError): String
 
