@@ -62,15 +62,7 @@ trait Parsers[Parser[+_]] { self =>
 
   def scope[A](msg: String)(p: Parser[A]): Parser[A]
 
-  case class Location(input: String, offset: Int = 0) {
-    lazy val line: Int = input.slice(0,offset+1).count(_ == '\n') + 1
-    lazy val col: Int = input.slice(0,offset+1).lastIndexOf('\n') match {
-      case -1 => offset + 1
-      case lineStart => offset - lineStart
-    }
-  }
-
-  case class ParseError(stack: List[(Location,String)])
+  def attempt[A](p: Parser[A]): Parser[A]
 
   def errorLocation(e: ParseError): Location
   def errorMessage(e: ParseError): String
