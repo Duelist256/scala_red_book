@@ -33,6 +33,13 @@ object Gen {
 
   def unit[A](a: => A): Gen[A] = Gen(State(RNG.unit(a)))
 
+  def option[A](value: => A): Gen[Option[A]] = boolean.flatMap(b =>
+    if (b) unit(Some(value))
+    else unit(None)
+  )
+
+  def int: Gen[Int] = Gen(State(_.nextInt))
+
   def boolean: Gen[Boolean] = Gen(State(rng => {
     val (i, rng2) = rng.nextInt
     (i > 0, rng2)
