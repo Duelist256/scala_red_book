@@ -26,8 +26,16 @@ object MonoidLaws {
     Prop.run(monoidLaws(MonoidInstances.booleanAnd)(Gen.boolean))
     Prop.run(monoidLaws(MonoidInstances.optionMonoid[String])(Gen.unit(Some("foo"))))
     Prop.run(monoidLaws(MonoidInstances.optionMonoid[String])(Gen.unit(None)))
+    Prop.run(monoidLaws(MonoidInstances.wcMonoid)(Gen.int.flatMap(i => Gen.unit(Stub(i.toString)))))
+    Prop.run(monoidLaws(MonoidInstances.wcMonoid)(generatePart()))
     // is it possible to compare lambdas?
     // Prop.run(identity(MonoidInstances.endoMonoid[String])(Gen.unit(s => s.concat(s))))
   }
 
+  private def generatePart(): Gen[WC] = {
+    val left = Gen.int.flatMap(i => Gen.unit(i.toString))
+    val words = Gen.int
+    val right = Gen.int.flatMap(i => Gen.unit(i.toString))
+    left.flatMap(l => words.flatMap(w => right.flatMap(r => Gen.unit(Part(l, w, r)))))
+  }
 }

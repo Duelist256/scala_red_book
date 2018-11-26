@@ -48,4 +48,22 @@ object MonoidInstances {
     override def op(a1: A => A, a2: A => A): A => A = a1.compose(a2)
     override def zero: A => A = identity
   }
+
+  /* Exercise 10.10
+     Write a monoid instance for WC and make sure that it meets the monoid laws. */
+  val wcMonoid: Monoid[WC] = new Monoid[WC] {
+    override def op(a1: WC, a2: WC): WC = (a1, a2) match {
+      case (Stub(ch), Stub(ch2)) => Stub(ch + ch2)
+      case (Stub(ch), Part(lch, words, rch)) => Part(ch + lch, words, rch)
+      case (Part(lch, words, rch), Stub(ch2)) => Part(lch, words, rch + ch2)
+      case (Part(lch, words, rch), Part(lch2, words2, rch2)) =>
+        val n = if ((rch + lch2).nonEmpty) 1 else 0
+        Part(lch, words + n, rch2)
+    }
+    override def zero: WC = Stub("")
+  }
+
+  /* TODO Exercise 10.11
+     Use the WC monoid to implement a function that counts words in a String by recursively
+     splitting it into substrings and counting the words in those substrings. */
 }

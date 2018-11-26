@@ -33,7 +33,7 @@ object Monoid {
     }
 
 
-  /* TODO TEST Exercise 10.8
+  /* Exercise 10.8
      Hard: Also implement a parallel version of foldMap using the library we developed in
      chapter 7. Hint: Implement par, a combinator to promote Monoid[A] to a Monoid
      [Par[A]], and then use this to implement parFoldMap.*/
@@ -44,4 +44,8 @@ object Monoid {
 
   def parFoldMap[A,B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): Par[B] =
     foldMapV(v, par(m))(a => Par.lazyUnit(f(a)))
+
+  /* Exercise 10.9
+     Hard: Use foldMap to detect whether a given IndexedSeq[Int] is ordered. You’ll need
+     to come up with a creative Monoid. */
 }
