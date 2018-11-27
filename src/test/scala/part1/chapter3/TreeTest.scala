@@ -48,19 +48,37 @@ class TreeTest extends FunSpec with Matchers {
                                                                  Branch(Leaf(6.0), Leaf(-7.5)))))
       }
     }
-//    describe("Exercise 3.29: fold, sizeViaFold, maximumViaFold, depthViaFold and mapViaFold") {
-//      it("fold: should return nonempty result") {
-//        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
-//        fold(tree, 0)(_ + _) shouldEqual 36
-//        fold(tree, 1)(_ * _) shouldEqual -248
-//        val treeOfStrings = Branch(Branch(Leaf("Hello, "), Leaf("World!")), Branch(Leaf(" Whatcha "), Leaf("doin?")))
-//        fold(treeOfStrings, "")(_ + _) shouldEqual "Hello, World! Whatcha doin?"
-//      }
-//      it("sizeViaFold: should return nonempty result") {
-//        val tree5 = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
-//        val tree7 = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
-//        sizeViaFold(tree5) shouldEqual 3 // TODO: LOLKEK
-//      }
-//    }
+    describe("Exercise 3.29: fold, sizeViaFold, maximumViaFold, depthViaFold and mapViaFold") {
+      it("fold: should return nonempty result") {
+        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
+        fold(tree)(identity)(_ + _) shouldEqual 36
+        fold(tree)(identity)(_ * _) shouldEqual -248
+        val treeOfStrings = Branch(Branch(Leaf("Hello, "), Leaf("World!")), Branch(Leaf(" Whatcha "), Leaf("doin?")))
+        fold(treeOfStrings)(identity)(_ + _) shouldEqual "Hello, World! Whatcha doin?"
+      }
+      it("sizeViaFold: should return size of a tree") {
+        val tree5 = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
+        val tree7 = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+        sizeViaFold(tree5) shouldEqual 5
+        sizeViaFold(tree7) shouldEqual 7
+      }
+      it("maximumViaFold: should return maximum value of a tree") {
+        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
+        maximumViaFold(tree) shouldEqual 31
+        val secondTree = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+        maximumViaFold(secondTree) shouldEqual 4
+      }
+      it("mapViaFold: should map a tree") {
+        val tree = Branch(Branch(Leaf(-1), Leaf(2)), Branch(Leaf(31), Leaf(4)))
+        val expectedTree = Branch(Branch(Leaf(-10), Leaf(20)), Branch(Leaf(310), Leaf(40)))
+        mapViaFold(tree)(_ * 10) shouldEqual expectedTree
+        val secondTree = Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4)))
+        val expectedSecondTree = Branch(Branch(Leaf(28), Leaf(56)), Branch(Leaf(84), Leaf(112)))
+        mapViaFold(secondTree)(_ * 28) shouldEqual expectedSecondTree
+        val treeOfStrings = Branch(Branch(Leaf("Hello, "), Leaf("World!")), Branch(Leaf(" Whatcha "), Leaf("doin?")))
+        val expectedTreeOfStrings = Branch(Branch(Leaf("!Hello, "), Leaf("!World!")), Branch(Leaf("! Whatcha "), Leaf("!doin?")))
+        mapViaFold(treeOfStrings)(s => s"!$s") shouldEqual expectedTreeOfStrings
+      }
+    }
   }
 }
