@@ -34,6 +34,12 @@ sealed trait Stream[+A] {
         else Empty
     }
 
+  def foldLeft[B](z: => B)(f: (=> B, A) => B): B =
+    this match {
+      case Cons(h,t) => f(t().foldLeft(z)(f), h())
+      case _ => z
+    }
+
   def foldRight[B](z: => B)(f: (A, => B) => B): B =
     this match {
       case Cons(h,t) => f(h(), t().foldRight(z)(f))
