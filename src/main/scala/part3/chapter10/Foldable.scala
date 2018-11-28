@@ -40,9 +40,9 @@ object Foldable {
 
   val streamFoldable = new Foldable[Stream] {
     override def foldRight[A, B](as: Stream[A])(z: B)(f: (A, B) => B): B =
-      as.foldRight(z)(f)
+      as.foldRight(z)((a, b) => f(a, b))
     override def foldLeft[A, B](as: Stream[A])(z: B)(f: (B, A) => B): B =
-      as.foldLeft(z)(f)
+      as.foldLeft(z)((b, a) => f(b, a))
     override def foldMap[A, B](as: Stream[A])(f: A => B)(m: Monoid[B]): B =
       foldLeft(as)(m.zero)((b, a) => m.op(b, f(a)))
   }
