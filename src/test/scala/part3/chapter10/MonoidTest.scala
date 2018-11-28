@@ -11,6 +11,23 @@ import scala.concurrent.duration._
 class MonoidTest extends FunSpec with Matchers {
 
   describe("MonoidTest") {
+    describe("Exercise 10.6: foldLeft and foldRight via foldMap") {
+      it("should sum all elements") {
+        val list = List(1, 2, 3, 4, 5)
+        Monoid.foldLeft(list)(0)(_ + _) shouldEqual list.sum
+        Monoid.foldRight(list)(0)(_ + _) shouldEqual list.sum
+      }
+      it("should multiply all elements") {
+        val list = List(1, 2, 3, 4, 5)
+        Monoid.foldLeft(list)(1)(_ * _) shouldEqual list.product
+        Monoid.foldRight(list)(1)(_ * _) shouldEqual list.product
+      }
+      it("should concatenata all elements") {
+        val list = List("Hello", ", ", "World", "!")
+        Monoid.foldLeft(list)("")(_ + _) shouldEqual list.foldLeft("")(_ + _)
+        Monoid.foldRight(list)("")(_ + _) shouldEqual list.foldRight("")(_ + _)
+      }
+    }
     describe("Exercise 10.8: parFoldMap") {
       it("should sum all elements") {
         val is = IndexedSeq("1", "2", "3", "4", "5")

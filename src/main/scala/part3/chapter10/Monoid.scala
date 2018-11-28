@@ -16,9 +16,19 @@ object Monoid {
   def foldMap[A,B](as: List[A], m: Monoid[B])(f: A => B): B =
     as.foldLeft(m.zero)((b, a) => m.op(b, f(a)))
 
-  /* TODO Exercise 10.6
+  /* Exercise 10.6
      Hard: The foldMap function can be implemented using either foldLeft or fold-
      Right. But you can also write foldLeft and foldRight using foldMap! Try it. */
+  def foldLeft[A, B](as: List[A])(z: B)(f: (B, A) => B): B = {
+    val m = new Monoid[B => B] {
+      override def op(a1: B => B, a2: B => B): B => B = a2 compose a1
+      override def zero: B => B = identity
+    }
+    foldMap(as, m)(a => b => f(b, a))(z)
+  }
+
+  def foldRight[A, B](as: List[A])(z: B)(f: (A, B) => B): B =
+    foldMap(as, MonoidInstances.endoMonoid[B])(a => b => f(a, b))(z)
 
   /* Exercise 10.7
      Implement a foldMap for IndexedSeq.4 Your implementation should use the strategy
@@ -48,4 +58,28 @@ object Monoid {
   /* Exercise 10.9
      Hard: Use foldMap to detect whether a given IndexedSeq[Int] is ordered. You’ll need
      to come up with a creative Monoid. */
+
+
+  def mapMergeMonoid[K,V](V: Monoid[V]): Monoid[Map[K, V]] =
+    new Monoid[Map[K, V]] {
+      def zero: Map[K, V] = Map[K,V]()
+      def op(a: Map[K, V], b: Map[K, V]): Map[K, V] =
+        (a.keySet ++ b.keySet).foldLeft(zero) { (acc,k) =>
+          acc.updated(k, V.op(a.getOrElse(k, V.zero),
+            b.getOrElse(k, V.zero)))
+        }
+    }
+
+  /* TODO Exercise 10.17
+     Write a monoid instance for functions whose results are monoids. */
+  def functionMonoid[A,B](B: Monoid[B]): Monoid[A => B] = ???
+
+  /* TODO Exercise 10.18
+     A bag is like a set, except that it’s represented by a map that contains one entry per
+     element with that element as the key, and the value under that key is the number of
+     times the element appears in the bag. For example:
+     scala> bag(Vector("a", "rose", "is", "a", "rose"))
+     res0: Map[String,Int] = Map(a -> 2, rose -> 2, is -> 1)
+     Use monoids to compute a “bag” from an IndexedSeq. */
+  def bag[A](as: IndexedSeq[A]): Map[A, Int] = ???
 }
