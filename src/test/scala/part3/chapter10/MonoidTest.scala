@@ -87,5 +87,15 @@ class MonoidTest extends FunSpec with Matchers {
         Monoid.isOrdered(is4) shouldBe false
       }
     }
+    describe("Exercise 10.18: isOrdered") {
+      it("should rerurn map of value -> count") {
+        val result = Monoid.bag(Vector("a", "rose", "is", "a", "rose"))
+        val expectedResult = Map("a" -> 2, "rose" -> 2, "is" -> 1)
+        result shouldEqual expectedResult
+        val result2 = Monoid.bag(Vector("one", "two", "two", "three", "three", "three", "four", "four", "four", "four"))
+        val expectedResult2 = Map("one" -> 1, "two" -> 2, "three" -> 3, "four" -> 4)
+        result2 shouldEqual expectedResult2
+      }
+    }
   }
 }
