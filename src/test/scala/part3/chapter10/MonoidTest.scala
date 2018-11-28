@@ -71,5 +71,21 @@ class MonoidTest extends FunSpec with Matchers {
         f.get() shouldEqual v
       }
     }
+    describe("Exercise 10.9: isOrdered") {
+      it("should return whether IndexedSeq ordered or not") {
+        val emptyIs = IndexedSeq()
+        val singleIs = IndexedSeq(1)
+        val is = IndexedSeq(1, 2, 3, 4, 5)
+        val is2 = IndexedSeq(1, 3, 3, 4, 5)
+        val is3 = IndexedSeq(5, 1, 3, 3, 4, 5)
+        val is4 = IndexedSeq(5, 4, 3, 2, 4, 5)
+        Monoid.isOrdered(emptyIs) shouldBe true
+        Monoid.isOrdered(singleIs) shouldBe true
+        Monoid.isOrdered(is) shouldBe true
+        Monoid.isOrdered(is2) shouldBe true
+        Monoid.isOrdered(is3) shouldBe false
+        Monoid.isOrdered(is4) shouldBe false
+      }
+    }
   }
 }

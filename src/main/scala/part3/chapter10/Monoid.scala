@@ -58,7 +58,19 @@ object Monoid {
   /* Exercise 10.9
      Hard: Use foldMap to detect whether a given IndexedSeq[Int] is ordered. You’ll need
      to come up with a creative Monoid. */
-
+  /* Solved for ascending order */
+  def isOrdered(is: IndexedSeq[Int]): Boolean = {
+    val m = new Monoid[(Int, Boolean)] {
+      override def op(a1: (Int, Boolean), a2: (Int, Boolean)): (Int, Boolean) =
+        (a1, a2) match {
+          case ((_, b1), (i2, b2)) if !(b1 && b2) => (i2, false)
+          case ((i1, _), (i2, _)) if i1 <= i2 => (i2, true)
+          case ((_, _), (i2, _)) => (i2, false)
+        }
+      override def zero: (Int, Boolean) = (Int.MinValue, true)
+    }
+    foldMapV(is, m)(i => (i, true))._2
+  }
 
   def mapMergeMonoid[K,V](V: Monoid[V]): Monoid[Map[K, V]] =
     new Monoid[Map[K, V]] {
@@ -70,9 +82,13 @@ object Monoid {
         }
     }
 
-  /* TODO Exercise 10.17
+  /* Exercise 10.17
      Write a monoid instance for functions whose results are monoids. */
-  def functionMonoid[A,B](B: Monoid[B]): Monoid[A => B] = ???
+  def functionMonoid[A,B](B: Monoid[B]): Monoid[A => B] = new Monoid[A => B] {
+    override def op(a1: A => B, a2: A => B): A => B =
+      a => B.op(a1(a), a2(a))
+    override def zero: A => B = _ => B.zero
+  }
 
   /* TODO Exercise 10.18
      A bag is like a set, except that it’s represented by a map that contains one entry per
