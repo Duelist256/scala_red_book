@@ -66,4 +66,9 @@ object MonoidInstances {
   /* TODO Exercise 10.11
      Use the WC monoid to implement a function that counts words in a String by recursively
      splitting it into substrings and counting the words in those substrings. */
+
+  /* TODO Exercise 10.16
+     Prove it. Notice that your implementation of op is obviously associative so long as A.op
+     and B.op are both associative. */
+  def productMonoid[A,B](A: Monoid[A], B: Monoid[B]): Monoid[(A,B)] = ???
 }
