@@ -98,5 +98,5 @@ object Monoid {
      res0: Map[String,Int] = Map(a -> 2, rose -> 2, is -> 1)
      Use monoids to compute a “bag” from an IndexedSeq. */
   def bag[A](as: IndexedSeq[A]): Map[A, Int] =
-    foldMapV(as, mapMergeMonoid[A, Int](MonoidInstances.intAddition))(a => Map[A, Int](a -> 1))
+    foldMapV(as, mapMergeMonoid[A, Int](MonoidInstances.intAddition))(a => Map(a -> 1))
 }
