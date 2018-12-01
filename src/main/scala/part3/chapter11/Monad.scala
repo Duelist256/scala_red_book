@@ -23,6 +23,27 @@ trait Monad[F[_]] extends Functor[F] {
   }
 
   def traverse[A,B](la: List[A])(f: A => F[B]): F[List[B]] = sequence(la map f)
+
+  /* Exercise 11.4
+     Implement replicateM.*/
+  def replicateM[A](n: Int, ma: F[A]): F[List[A]] = sequence(List.fill(n)(ma))
+
+  def product[A,B](ma: F[A], mb: F[B]): F[(A, B)] = map2(ma, mb)((_, _))
+
+  /* Exercise 11.6
+     Hard: Here’s an example of a function we haven’t seen before. Implement the function
+     filterM. It’s a bit like filter, except that instead of a function from A => Boolean, we
+     have an A => F[Boolean]. (Replacing various ordinary functions like this with the
+     monadic equivalent often yields interesting results.) Implement this function, and
+     then think about what it means for various data types. */
+  def filterM[A](ms: List[A])(f: A => F[Boolean]): F[List[A]] =
+    ms match {
+      case Nil => unit(Nil)
+      case x :: xs => flatMap(f(x))(
+        if (_) map(filterM(xs)(f))(list => x :: list)
+        else filterM(xs)(f)
+      )
+    }
 }
 
 object Monad {
