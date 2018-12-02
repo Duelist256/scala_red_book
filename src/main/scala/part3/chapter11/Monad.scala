@@ -44,6 +44,17 @@ trait Monad[F[_]] extends Functor[F] {
         else filterM(xs)(f)
       )
     }
+
+  /* Exercise 11.7
+     Implement the Kleisli composition function compose. */
+  def compose[A,B,C](f: A => F[B], g: B => F[C]): A => F[C] =
+    a => flatMap(f(a))(g)
+
+  /* Exercise 11.8
+     Hard: Implement flatMap in terms of compose. It seems that we’ve found another
+     minimal set of monad combinators: compose and unit. */
+  def flatMapViaCompose[A, B](fa: F[A])(f: A => F[B]): F[B] =
+    compose[F[A], A, B](identity, a => f(a))(fa)
 }
 
 object Monad {
