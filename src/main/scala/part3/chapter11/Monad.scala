@@ -1,6 +1,7 @@
 package part3.chapter11
 
 import part1.chapter5.{Cons, Empty, Stream}
+import part1.chapter6.State
 import part2.chapter7.Par
 import part2.chapter8.Gen
 
@@ -99,9 +100,14 @@ object Monad {
     override def flatMap[A, B](fa: List[A])(f: A => List[B]): List[B] = fa flatMap f
   }
 
-  /* TODO Exercise 11.2
+  /* Exercise 11.2
      Hard: State looks like it would be a monad too, but it takes two type arguments and
      you need a type constructor of one argument to implement Monad. Try to implement a
      State monad, see what issues you run into, and think about possible solutions. We’ll
      discuss the solution later in this chapter. */
+  def stateMonad[S] = new Monad[({type f[x] = State[S,x]})#f] {
+    def unit[A](a: => A): State[S,A] = State(s => (a, s))
+    def flatMap[A,B](st: State[S,A])(f: A => State[S,B]): State[S,B] =
+      st flatMap f
+  }
 }
