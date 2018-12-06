@@ -110,4 +110,12 @@ object Monad {
     def flatMap[A,B](st: State[S,A])(f: A => State[S,B]): State[S,B] =
       st flatMap f
   }
+
+  /* Exercise 12.5
+     Write a monad instance for Either. */
+  def eitherMonad[E] = new Monad[({type f[x] = Either[E, x]})#f] {
+    override def unit[A](a: => A): Either[E, A] = Right(a)
+    override def flatMap[A, B](fa: Either[E, A])(f: A => Either[E, B]): Either[E, B] =
+      fa.flatMap(f)
+  }
 }
