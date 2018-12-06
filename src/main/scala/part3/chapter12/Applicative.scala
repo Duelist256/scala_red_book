@@ -41,4 +41,19 @@ object Applicative {
         case x :: xs => map2(x, sequence(xs))(_ :: _)
       }
   }
+
+  /* Exercise 12.6
+     Write an Applicative instance for Validation that accumulates errors in Failure.
+     Note that in the case of Failure there’s always at least one error, stored in head. The
+     rest of the errors accumulate in the tail. */
+  def validationApplicative[E] = new Applicative[({type f[x] = Validation[E, x]})#f] {
+    override def unit[A](a: => A): Validation[E, A] = Success(a)
+    override def map2[A, B, C](fa: Validation[E, A], fb: Validation[E, B])(f: (A, B) => C): Validation[E, C] =
+      (fa, fb) match {
+        case (Failure(e, t), Failure(e2, t2)) => Failure(e, t ++ (e2 +: t2))
+        case (Success(a), f @ Failure(_, _)) => f
+        case (f @ Failure(_, _), Success(a)) => f
+        case (Success(a), Success(a2)) => Success(f(a, a2))
+      }
+  }
 }
