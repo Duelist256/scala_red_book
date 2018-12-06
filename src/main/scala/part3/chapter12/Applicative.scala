@@ -25,3 +25,20 @@ trait Applicative[F[_]] extends Functor[F] {
 
   def product[A,B](fa: F[A], fb: F[B]): F[(A,B)] = map2(fa, fb)((_, _))
 }
+
+object Applicative {
+  val streamApplicative = new Applicative[Stream] {
+    override def unit[A](a: => A): Stream[A] = Stream.continually(a)
+    override def map2[A, B, C](a: Stream[A], b: Stream[B])(f: (A, B) => C): Stream[C] =
+      a zip b map f.tupled
+
+    /* Exercise 12.4
+       Hard: What is the meaning of streamApplicative.sequence? Specializing the signature
+       of sequence to Stream, we have this: */
+    def sequence2[A](a: List[Stream[A]]): Stream[List[A]] =
+      a match {
+        case Nil => unit(Nil)
+        case x :: xs => map2(x, sequence(xs))(_ :: _)
+      }
+  }
+}
