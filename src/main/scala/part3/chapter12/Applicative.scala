@@ -2,7 +2,7 @@ package part3.chapter12
 
 import part3.chapter11.Functor
 
-trait Applicative[F[_]] extends Functor[F] {
+trait Applicative[F[_]] extends Functor[F] { self =>
   // primitive combinators
   def map2[A,B,C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C]
   def unit[A](a: => A): F[A]
@@ -24,6 +24,18 @@ trait Applicative[F[_]] extends Functor[F] {
     else map2(fa, replicateM(n - 1, fa))(_ :: _)
 
   def product[A,B](fa: F[A], fb: F[B]): F[(A,B)] = map2(fa, fb)((_, _))
+
+  /* Exercise 12.8
+     Just like we can take the product of two monoids A and B to give the monoid (A, B),
+     we can take the product of two applicative functors. Implement this function: */
+  def product[G[_]](G: Applicative[G]): Applicative[({type f[x] = (F[x], G[x])})#f] =
+    new Applicative[({type f[x] = (F[x], G[x])})#f] {
+      override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) =
+        (fa, fb) match {
+          case ((fa, ga), (fb, gb)) => (self.map2(fa, fb)(f), G.map2(ga, gb)(f))
+        }
+      override def unit[A](a: => A): (F[A], G[A]) = (self.unit(a), G.unit(a))
+    }
 }
 
 object Applicative {
