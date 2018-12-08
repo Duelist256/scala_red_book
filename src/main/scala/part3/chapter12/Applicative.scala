@@ -28,14 +28,22 @@ trait Applicative[F[_]] extends Functor[F] { self =>
   /* Exercise 12.8
      Just like we can take the product of two monoids A and B to give the monoid (A, B),
      we can take the product of two applicative functors. Implement this function: */
-  def product[G[_]](G: Applicative[G]): Applicative[({type f[x] = (F[x], G[x])})#f] =
-    new Applicative[({type f[x] = (F[x], G[x])})#f] {
-      override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) =
-        (fa, fb) match {
-          case ((fa, ga), (fb, gb)) => (self.map2(fa, fb)(f), G.map2(ga, gb)(f))
-        }
-      override def unit[A](a: => A): (F[A], G[A]) = (self.unit(a), G.unit(a))
-    }
+  def product[G[_]](G: Applicative[G]) = new Applicative[({type f[x] = (F[x], G[x])})#f] {
+    override def map2[A, B, C](fa: (F[A], G[A]), fb: (F[B], G[B]))(f: (A, B) => C): (F[C], G[C]) =
+      (fa, fb) match {
+        case ((fa, ga), (fb, gb)) => (self.map2(fa, fb)(f), G.map2(ga, gb)(f))
+      }
+    override def unit[A](a: => A): (F[A], G[A]) = (self.unit(a), G.unit(a))
+  }
+
+  /* Exercise 12.9
+     Hard: Applicative functors also compose another way! If F[_] and G[_] are applicative
+     functors, then so is F[G[_]]. Implement this function: */
+  def compose[G[_]](G: Applicative[G]) = new Applicative[({type f[x] = F[G[x]]})#f] {
+    override def map2[A, B, C](fga: F[G[A]], fgb: F[G[B]])(f: (A, B) => C): F[G[C]] =
+      self.map2(fga, fgb)((ga, gb) => G.map2(ga, gb)(f))
+    override def unit[A](a: => A): F[G[A]] = self.unit(G.unit(a))
+  }
 }
 
 object Applicative {
