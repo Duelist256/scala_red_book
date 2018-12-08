@@ -44,6 +44,12 @@ trait Applicative[F[_]] extends Functor[F] { self =>
       self.map2(fga, fgb)((ga, gb) => G.map2(ga, gb)(f))
     override def unit[A](a: => A): F[G[A]] = self.unit(G.unit(a))
   }
+
+  /* Exercise 12.12
+     On the Applicative trait, implement sequence over a Map rather than a List: */
+  def sequenceMap[K,V](ofa: Map[K,F[V]]): F[Map[K,V]] = ofa.foldLeft(unit(Map[K, V]())){
+    case (fmap, (k, fv)) => map2(fmap, fv)((map, v) => map + (k -> v))
+  }
 }
 
 object Applicative {
