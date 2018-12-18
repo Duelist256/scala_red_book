@@ -23,6 +23,13 @@ sealed abstract class STArray[S, A](implicit manifest: Manifest[A]) {
   def fill(xs: Map[Int,A]): ST[S,Unit] = xs.foldRight(ST[S, Unit](())){
     case ((idx, v), st) => st.flatMap(_ => write(idx, v))
   }
+
+  def swap(i: Int, j: Int): ST[S,Unit] = for {
+    x <- read(i)
+    y <- read(j)
+    _ <- write(i, y)
+    _ <- write(j, x)
+  } yield ()
 }
 
 object STArray {
