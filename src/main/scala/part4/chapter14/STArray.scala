@@ -14,13 +14,15 @@ sealed abstract class STArray[S, A](implicit manifest: Manifest[A]) {
   def read(i: Int): ST[S, A] = ST(value(i))
   def freeze: ST[S, List[A]] = ST(value.toList)
 
-  /* TODO Exercise 14.1
+  /* Exercise 14.1
      Add a combinator on STArray to fill the array from a Map where each key in the map
      represents an index into the array, and the value under that key is written to the array
      at that index. For example, xs.fill(Map(0->"a", 2->"b")) should write the value
      "a" at index 0 in the array xs and "b" at index 2. Use the existing combinators to write
      your implementation.*/
-  def fill(xs: Map[Int,A]): ST[S,Unit] = ???
+  def fill(xs: Map[Int,A]): ST[S,Unit] = xs.foldRight(ST[S, Unit](())){
+    case ((idx, v), st) => st.flatMap(_ => write(idx, v))
+  }
 }
 
 object STArray {
