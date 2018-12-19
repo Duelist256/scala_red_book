@@ -22,5 +22,19 @@ object Main {
         r1 <- STRef(1)
       } yield r1
     }
+
+    /* TODO Exercise 14.2
+       Write the purely functional versions of partition and qs. */
+    def partition[S](arr: STArray[S,Int], n: Int, r: Int, pivot: Int): ST[S,Int] = ???
+    def qs[S](a: STArray[S,Int], n: Int, r: Int): ST[S,Unit] = ???
+    def quicksort(xs: List[Int]): List[Int] =
+      if (xs.isEmpty) xs else ST.runST(new RunnableST[List[Int]] {
+        def apply[S] = for {
+          arr <- STArray.fromList(xs)
+          size <- arr.size
+          _ <- qs(arr, 0, size - 1)
+          sorted <- arr.freeze
+        } yield sorted
+      })
   }
 }
