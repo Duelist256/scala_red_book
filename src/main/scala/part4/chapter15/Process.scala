@@ -9,9 +9,66 @@ sealed trait Process[I, O] {
     }
     case Emit(h, t) => h #:: t(s)
   }
+
+  def repeat: Process[I, O] = {
+    def go(p: Process[I,O]): Process[I,O] = p match {
+      case Halt() => go(this)
+      case Await(recv) => Await {
+        case None => recv(None)
+        case i => go(recv(i))
+      }
+      case Emit(h, t) => Emit(h, go(t))
+    }
+    go(this)
+  }
 }
 
 case class Emit[I, O](head: O, tail: Process[I, O] = Halt[I, O]()) extends Process[I, O]
 case class Await[I, O](recv: Option[I] => Process[I, O]) extends Process[I, O]
 case class Halt[I, O]() extends Process[I, O]
 
+object Process {
+  def liftOne[I, O](f: I => O): Process[I, O] =
+    Await {
+      case Some(i) => Emit(f(i))
+      case None => Halt()
+    }
+
+  def lift[I, O](f: I => O): Process[I, O] = liftOne(f).repeat
+
+  def filter[I](p: I => Boolean): Process[I, I] =
+    Await[I, I] {
+      case Some(i) if p(i) => Emit(i)
+      case _ => Halt()
+    }.repeat
+
+  def sum: Process[Double,Double] = {
+    def go(acc: Double): Process[Double,Double] =
+      Await {
+        case Some(d) => Emit(d+acc, go(d+acc))
+        case None => Halt()
+      }
+    go(0.0)
+  }
+
+  def main(args: Array[String]): Unit = {
+    val p: Process[Int, Int] = liftOne((x: Int) => x * 2)
+    val xs: Stream[Int] = p(Stream(1, 2, 3))
+    println(xs.toList)
+
+    val p2: Process[Int, Int] = lift((x: Int) => x * 2)
+    val ys: Stream[Int] = p(Stream(1, 2, 3))
+    println(ys.toList)
+
+    val units = Stream.continually(())
+    val ones = lift((_:Unit) => 1)(units)
+    println(ones)
+
+    val even = filter((x: Int) => x % 2 == 0)
+    val evens = even(Stream(1,2,3,4)).toList
+    println(evens)
+
+    val s = sum(Stream(1.0, 2.0, 3.0, 4.0)).toList
+    println(s)
+  }
+}
