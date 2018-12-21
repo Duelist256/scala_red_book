@@ -51,6 +51,26 @@ object Process {
     go(0.0)
   }
 
+  /* TODO Exercise 15.1
+     Implement take, which halts the Process after it encounters the given number of elements,
+     and drop, which ignores the given number of arguments and then emits the
+     rest. Also implement takeWhile and dropWhile, that take and drop elements as long
+     as the given predicate remains true. */
+  def take[I](n: Int): Process[I,I] = ???
+  def drop[I](n: Int): Process[I,I] = ???
+  def takeWhile[I](f: I => Boolean): Process[I,I] = ???
+  def dropWhile[I](f: I => Boolean): Process[I,I] = ???
+
+  /* TODO Exercise 15.2
+     Implement count. It should emit the number of elements seen so far. For instance,
+     count(Stream("a", "b", "c")) should yield Stream(1, 2, 3) (or Stream(0, 1, 2, 3),
+     your choice). */
+  def count[I]: Process[I,Int] = ???
+
+  /* TODO Exercise 15.3
+     Implement mean. It should emit a running average of the values seen so far. */
+  def mean: Process[Double,Double] = ???
+
   def main(args: Array[String]): Unit = {
     val p: Process[Int, Int] = liftOne((x: Int) => x * 2)
     val xs: Stream[Int] = p(Stream(1, 2, 3))
