@@ -51,15 +51,44 @@ object Process {
     go(0.0)
   }
 
-  /* TODO Exercise 15.1
+  /* Exercise 15.1
      Implement take, which halts the Process after it encounters the given number of elements,
      and drop, which ignores the given number of arguments and then emits the
      rest. Also implement takeWhile and dropWhile, that take and drop elements as long
      as the given predicate remains true. */
-  def take[I](n: Int): Process[I,I] = ???
-  def drop[I](n: Int): Process[I,I] = ???
-  def takeWhile[I](f: I => Boolean): Process[I,I] = ???
-  def dropWhile[I](f: I => Boolean): Process[I,I] = ???
+  def take[I](n: Int): Process[I,I] = {
+    def loop(n: Int): Process[I,I] = {
+      Await[I,I] {
+        case Some(i) if n > 0 => Emit(i, loop(n - 1))
+        case _ => Halt()
+      }
+    }
+    loop(n)
+  }
+  def drop[I](n: Int): Process[I,I] = {
+    def loop(n: Int): Process[I,I] = {
+      Await[I,I] {
+        case Some(i) if n <= 0 => Emit(i, loop(n - 1))
+        case Some(_) => loop(n - 1)
+        case _ => Halt()
+      }
+    }
+    loop(n)
+  }
+  def takeWhile[I](f: I => Boolean): Process[I,I] = {
+    Await[I,I] {
+      case Some(i) if f(i) => Emit(i, takeWhile(f))
+      case _ => Halt()
+    }
+  }
+  def dropWhile[I](f: I => Boolean): Process[I,I] = {
+    Await[I,I] {
+      case Some(i) if f(i) => dropWhile(f)
+      case Some(i) => Emit(i, dropWhile(f))
+      case _ => Halt()
+    }
+
+  }
 
   /* TODO Exercise 15.2
      Implement count. It should emit the number of elements seen so far. For instance,
@@ -90,5 +119,8 @@ object Process {
 
     val s = sum(Stream(1.0, 2.0, 3.0, 4.0)).toList
     println(s)
+
+    val takeResult = take(2)(Stream(1, 2, 3))
+    println(takeResult.toList)
   }
 }
