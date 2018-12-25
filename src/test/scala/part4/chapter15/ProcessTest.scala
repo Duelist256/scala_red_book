@@ -121,5 +121,25 @@ class ProcessTest extends FunSpec with Matchers {
         actualList shouldEqual expectedList
       }
     }
+    describe("Exercise 15.2: count") {
+      it("should emit number of elements") {
+        val stream = Stream("a", "b", "c")
+        count(stream).toList shouldEqual List(0, 1, 2, 3)
+        val stream2 = Stream("a", "b", "c", "d", "e", "f", "g", "h")
+        count(stream2).toList shouldEqual List(0, 1, 2, 3, 4, 5, 6, 7, 8)
+        val emptyStream = Stream()
+        count(emptyStream).toList shouldEqual List(0)
+      }
+    }
+    describe("Exercise 15.3: mean") {
+      it("should emit number of elements") {
+        val stream = Stream(1.0, 2.0, 3.0)
+        mean(stream).toList shouldEqual List(0.0, 1.0, 1.5, 2.0)
+        val stream2 = Stream(1.0, 2.0, 3.0, 4.0, 5.0)
+        mean(stream2).toList shouldEqual List(0.0, 1.0, 1.5, 2.0, 2.5, 3.0)
+        val emptyStream = Stream()
+        mean(emptyStream).toList shouldEqual List(0.0)
+      }
+    }
   }
 }

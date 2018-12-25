@@ -90,15 +90,32 @@ object Process {
 
   }
 
-  /* TODO Exercise 15.2
+  /* Exercise 15.2
      Implement count. It should emit the number of elements seen so far. For instance,
      count(Stream("a", "b", "c")) should yield Stream(1, 2, 3) (or Stream(0, 1, 2, 3),
      your choice). */
-  def count[I]: Process[I,Int] = ???
+  def count[I]: Process[I,Int] = {
+    def go(acc: Int): Process[I, Int] =
+      Await {
+        case Some(d) => Emit(acc, go(1 + acc))
+        case None => Emit(acc)
+      }
+    go(0)
+  }
 
-  /* TODO Exercise 15.3
+  /* Exercise 15.3
      Implement mean. It should emit a running average of the values seen so far. */
-  def mean: Process[Double,Double] = ???
+  def mean: Process[Double,Double] = {
+    def go(sum: Double, count: Int): Process[Double, Double] =
+      Await {
+        case Some(v) if count == 0 => Emit(0.0, go(sum + v, 1))
+        case Some(v) => Emit(sum / count, go(sum + v, count + 1))
+        case None if count == 0 => Emit(0.0)
+        case None => Emit(sum / count)
+      }
+    go(0.0, 0)
+  }
+
 
   def main(args: Array[String]): Unit = {
     val p: Process[Int, Int] = liftOne((x: Int) => x * 2)
