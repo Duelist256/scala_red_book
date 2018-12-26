@@ -1,5 +1,8 @@
 package part4.chapter15
 
+import part3.chapter11.Monad
+import part4.chapter13.IO
+
 sealed trait Process[I, O] {
   def apply(s: Stream[I]): Stream[O] = this match {
     case Halt() => Stream()
@@ -32,6 +35,18 @@ sealed trait Process[I, O] {
         case Halt() => Halt() |> recv(None)
       }
     }
+  }
+
+  def ++(p: => Process[I,O]): Process[I,O] = this match {
+    case Halt() => p
+    case Emit(h, t) => Emit(h, t ++ p)
+    case Await(recv) => Await(recv andThen (_ ++ p))
+  }
+
+  def flatMap[O2](f: O => Process[I,O2]): Process[I,O2] = this match {
+    case Halt() => Halt()
+    case Emit(h, t) => f(h) ++ t.flatMap(f)
+    case Await(recv) => Await(recv andThen (_ flatMap f))
   }
 }
 
@@ -128,6 +143,29 @@ object Process {
     go(0.0, 0)
   }
 
+  def monad[I]: Monad[({ type f[x] = Process[I,x]})#f] =
+    new Monad[({ type f[x] = Process[I,x]})#f] {
+      def unit[O](o: => O): Process[I,O] = Emit(o)
+      def flatMap[O,O2](p: Process[I,O])(
+        f: O => Process[I,O2]): Process[I,O2] =
+        p flatMap f
+    }
+
+  def processFile[A,B](f: java.io.File, p: Process[String, A], z: B)(g: (B, A) => B): IO[B] = IO {
+    @annotation.tailrec
+    def go(ss: Iterator[String], cur: Process[String, A], acc: B): B =
+      cur match {
+        case Halt() => acc
+        case Await(recv) =>
+          val next = if (ss.hasNext) recv(Some(ss.next))
+          else recv(None)
+          go(ss, next, acc)
+        case Emit(h, t) => go(ss, t, g(acc, h))
+      }
+    val s = io.Source.fromFile(f)
+    try go(s.getLines, p, z)
+    finally s.close
+  }
 
   def main(args: Array[String]): Unit = {
     val p: Process[Int, Int] = liftOne((x: Int) => x * 2)
